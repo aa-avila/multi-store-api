@@ -1,0 +1,175 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { Logger } from 'nestjs-pino';
+import * as request from 'supertest';
+import { ConfigService } from '@nestjs/config';
+import { AllExceptionsFilter } from '../src/utils/filters/allException.filter';
+import { ResponseWrapperInterceptor } from '../src/utils/interceptors/responseWrapper.interceptor';
+import { TimestampInterceptor } from '../src/utils/interceptors/timestamp.interceptor';
+import { AppModule } from '../src/app.module';
+import { jwtCreator } from './helpers';
+
+describe('Items Module (e2e)', () => {
+  let app: INestApplication;
+
+  beforeEach(async () => {
+    const moduleTest: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    app = moduleTest.createNestApplication();
+
+    const logger = app.get<Logger>(Logger);
+    const config = app.get<ConfigService>(ConfigService);
+    app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    app.useGlobalFilters(new AllExceptionsFilter(logger, config));
+    app.useGlobalInterceptors(
+      new TimestampInterceptor(),
+      new ResponseWrapperInterceptor(),
+    );
+
+    await app.init();
+  });
+
+  afterEach(async () => app.close());
+
+  afterAll(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  });
+
+  describe('items flow', () => {
+    let item = {
+      name: 'notebook',
+      stock: 2,
+      tags: ['cheap', 'quick'],
+      _id: undefined,
+    };
+    let jwt: string;
+
+    beforeAll(async () => {
+      const user = {
+        email: 'test@test.com',
+        roles: ['admin'],
+        _id: '61d43f8d5d7b9a0a7adcba4a',
+        firstName: 'juan',
+      };
+      jwt = await jwtCreator(user);
+    });
+
+    it('create item like admin', async () => {
+      const {
+        status,
+        body: { data },
+      } = await request(app.getHttpServer())
+        .post('/items')
+        .send(item)
+        .set('Authorization', `Bearer ${jwt}`);
+
+      expect(status).toBe(201);
+      expect(data.name).toEqual(item.name);
+      expect(data.stock).toEqual(item.stock);
+      expect(data.tags.length).toEqual(item.tags.length);
+      expect(data._id).toBeDefined();
+      item = data;
+    });
+
+    it('read items like admin', async () => {
+      const {
+        status,
+        body: { data },
+      } = await request(app.getHttpServer())
+        .get('/items')
+        .set('Authorization', `Bearer ${jwt}`);
+
+      expect(status).toBe(200);
+      expect(data.docs.length).toEqual(1);
+    });
+
+    it('read one item like admin', async () => {
+      const {
+        status,
+        body: { data },
+      } = await request(app.getHttpServer())
+        .get(`/items/${item._id}`)
+        .set('Authorization', `Bearer ${jwt}`);
+
+      expect(status).toBe(200);
+      expect(data._id).toBe(item._id);
+      expect(data.name).toEqual(item.name);
+      expect(data.stock).toEqual(item.stock);
+      expect(data.tags.length).toEqual(item.tags.length);
+    });
+
+    it('read one item like admin bad request', async () => {
+      const {
+        status,
+        body: { error },
+      } = await request(app.getHttpServer())
+        .get(`/items/123`)
+        .set('Authorization', `Bearer ${jwt}`);
+
+      expect(status).toBe(400);
+      expect(error).toBeDefined();
+    });
+
+    it('read one item liken admin', async () => {
+      const {
+        status,
+        body: { data },
+      } = await request(app.getHttpServer())
+        .get(`/items/${item._id}`)
+        .set('Authorization', `Bearer ${jwt}`);
+
+      expect(status).toBe(200);
+      expect(data._id).toBe(item._id);
+      expect(data.name).toEqual(item.name);
+      expect(data.stock).toEqual(item.stock);
+      expect(data.tags.length).toEqual(item.tags.length);
+    });
+
+    it('update item like admin', async () => {
+      item = {
+        name: 'imacpro',
+        stock: 3,
+        tags: ['good'],
+        _id: item._id,
+      };
+
+      const {
+        status,
+        body: { data },
+      } = await request(app.getHttpServer())
+        .put(`/items/${item._id}`)
+        .set('Authorization', `Bearer ${jwt}`)
+        .send(item);
+
+      expect(status).toBe(200);
+      expect(data).toBe(true);
+    });
+
+    it('delete  item like admin', async () => {
+      const {
+        status,
+        body: { data },
+      } = await request(app.getHttpServer())
+        .delete(`/items/${item._id}`)
+        .set('Authorization', `Bearer ${jwt}`)
+        .send(item);
+
+      expect(status).toBe(200);
+      expect(data).toBe(true);
+    });
+
+    it('count  item like admin', async () => {
+      const {
+        status,
+        body: { data },
+      } = await request(app.getHttpServer())
+        .get(`/items/count`)
+        .set('Authorization', `Bearer ${jwt}`);
+
+      expect(status).toBe(200);
+      expect(data).toBe(0);
+    });
+  });
+});

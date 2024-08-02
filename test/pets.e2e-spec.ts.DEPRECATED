@@ -1,0 +1,177 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { Logger } from 'nestjs-pino';
+import * as request from 'supertest';
+import { ConfigService } from '@nestjs/config';
+import { AllExceptionsFilter } from '../src/utils/filters/allException.filter';
+import { ResponseWrapperInterceptor } from '../src/utils/interceptors/responseWrapper.interceptor';
+import { TimestampInterceptor } from '../src/utils/interceptors/timestamp.interceptor';
+import { AppModule } from '../src/app.module';
+import { jwtCreator } from './helpers';
+
+describe('Pets Module (e2e)', () => {
+  let app: INestApplication;
+
+  beforeEach(async () => {
+    const moduleTest: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    app = moduleTest.createNestApplication();
+
+    const logger = app.get<Logger>(Logger);
+    const config = app.get<ConfigService>(ConfigService);
+    app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    app.useGlobalFilters(new AllExceptionsFilter(logger, config));
+    app.useGlobalInterceptors(
+      new TimestampInterceptor(),
+      new ResponseWrapperInterceptor(),
+    );
+
+    await app.init();
+  });
+
+  afterEach(async () => app.close());
+
+  afterAll(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  });
+
+  describe('pets flow', () => {
+    let pet = {
+      name: 'Firulais',
+      type: 'perro',
+      sex: 'male',
+      weight: 23,
+      color: 'negro',
+      birthday: '2020-06-03',
+      notes: 'Responde al apodo Firu',
+      owners: ['61d433863260b40e79f87db1'],
+      _id: undefined,
+    };
+    let jwt: string;
+
+    beforeAll(async () => {
+      const user = {
+        email: 'test@test.com',
+        roles: ['admin'],
+        _id: '61d43f8d5d7b9a0a7adcba4a',
+        firstName: 'juan',
+      };
+      jwt = await jwtCreator(user);
+    });
+
+    it('create pet like admin', async () => {
+      const {
+        status,
+        body: { data },
+      } = await request(app.getHttpServer())
+        .post('/pets')
+        .send(pet)
+        .set('Authorization', `Bearer ${jwt}`);
+
+      expect(status).toBe(201);
+      expect(data.name).toEqual(pet.name);
+      expect(data.type).toEqual(pet.type);
+      expect(data.sex).toEqual(pet.sex);
+      expect(data.weight).toEqual(pet.weight);
+      expect(data.color).toEqual(pet.color);
+      expect(data.birthday).toEqual(pet.birthday);
+      expect(data.notes).toEqual(pet.notes);
+      expect(data.type).toEqual(pet.type);
+      expect(Array.from(data.owners)).toEqual(pet.owners);
+      expect(data._id).toBeDefined();
+      pet = data;
+    });
+
+    it('read pets like admin', async () => {
+      const {
+        status,
+        body: { data },
+      } = await request(app.getHttpServer())
+        .get('/pets')
+        .set('Authorization', `Bearer ${jwt}`);
+
+      expect(status).toBe(200);
+      expect(data.docs.length).toEqual(1);
+    });
+
+    it('read one pet like admin', async () => {
+      const {
+        status,
+        body: { data },
+      } = await request(app.getHttpServer())
+        .get(`/pets/${pet._id}`)
+        .set('Authorization', `Bearer ${jwt}`);
+
+      expect(status).toBe(200);
+      expect(data._id).toBe(pet._id);
+      expect(data.name).toEqual(pet.name);
+      expect(data.type).toEqual(pet.type);
+      expect(data.sex).toEqual(pet.sex);
+      expect(data.weight).toEqual(pet.weight);
+      expect(data.color).toEqual(pet.color);
+      expect(data.birthday).toEqual(pet.birthday);
+      expect(data.notes).toEqual(pet.notes);
+      expect(data.type).toEqual(pet.type);
+      expect(Array.from(data.owners)).toEqual(pet.owners);
+    });
+
+    it('read one pet like admin - bad request', async () => {
+      const {
+        status,
+        body: { error },
+      } = await request(app.getHttpServer())
+        .get(`/pets/123`)
+        .set('Authorization', `Bearer ${jwt}`);
+
+      expect(status).toBe(400);
+      expect(error).toBeDefined();
+    });
+
+    it('update pet like admin', async () => {
+      const petUpdate = {
+        name: 'Waldo',
+        type: 'perro',
+        notes:
+          'Le cambiamos el nombre, pero sigue respondiendo al nombre Firulais',
+        _id: pet._id,
+      };
+
+      const {
+        status,
+        body: { data },
+      } = await request(app.getHttpServer())
+        .put(`/pets/${pet._id}`)
+        .set('Authorization', `Bearer ${jwt}`)
+        .send(petUpdate);
+
+      expect(status).toBe(200);
+      expect(data).toBe(true);
+
+      const {
+        status: status2,
+        body: { data: data2 },
+      } = await request(app.getHttpServer())
+        .get(`/pets/${pet._id}`)
+        .set('Authorization', `Bearer ${jwt}`);
+
+      expect(status2).toBe(200);
+      expect(data2._id).toBe(petUpdate._id);
+      expect(data2.name).toEqual(petUpdate.name);
+      expect(data2.notes).toEqual(petUpdate.notes);
+    });
+
+    it('delete pet like admin', async () => {
+      const {
+        status,
+        body: { data },
+      } = await request(app.getHttpServer())
+        .delete(`/pets/${pet._id}`)
+        .set('Authorization', `Bearer ${jwt}`);
+
+      expect(status).toBe(200);
+      expect(data).toBe(true);
+    });
+  });
+});

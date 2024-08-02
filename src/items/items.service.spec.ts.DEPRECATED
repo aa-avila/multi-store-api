@@ -1,0 +1,229 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { getModelToken } from 'nestjs-typegoose';
+import { getModelForClass, mongoose } from '@typegoose/typegoose';
+
+import { ItemsService } from './items.service';
+import { ItemsController } from './items.controller';
+import { Item } from './items.model';
+
+describe('ItemsService', () => {
+  let itemsService: ItemsService;
+
+  const ItemModel = getModelForClass(Item, {
+    schemaOptions: {
+      collection: `item-${Math.random().toString(36).substring(7)}`,
+    },
+  });
+
+  beforeEach(async () => {
+    await mongoose.connect(process.env.MONGO_URL);
+
+    const itemsModule: TestingModule = await Test.createTestingModule({
+      controllers: [ItemsController],
+      providers: [
+        ItemsService,
+        {
+          provide: getModelToken('Item'),
+          useValue: ItemModel,
+        },
+      ],
+    }).compile();
+
+    itemsService = itemsModule.get<ItemsService>(ItemsService);
+    await ItemModel.deleteMany({});
+  });
+
+  afterAll(async () => {
+    await mongoose.disconnect();
+  });
+
+  it('should be defined', () => {
+    expect(itemsService).toBeDefined();
+  });
+
+  describe('function create', () => {
+    it('create one object', async () => {
+      const item = {
+        name: 'example',
+        stock: 1,
+        tags: ['red'],
+      };
+
+      const response = await itemsService.create(item);
+      expect(response.name).toEqual(item.name);
+      expect(response.stock).toEqual(item.stock);
+      expect(Array.from(response.tags)).toEqual(['red']);
+    });
+  });
+
+  describe('function count', () => {
+    it('count objects', async () => {
+      const item = {
+        name: 'example',
+        stock: 1,
+        tags: ['red'],
+      };
+
+      await ItemModel.create(item);
+      const response = await itemsService.count();
+      expect(response).toEqual(1);
+    });
+  });
+
+  describe('function findOne', () => {
+    it('find one object', async () => {
+      const item = {
+        name: 'example',
+        stock: 1,
+        tags: ['red'],
+      };
+
+      const responseCreate = await ItemModel.create(item);
+      const response = await itemsService.findOne(
+        responseCreate._id.toString(),
+      );
+      expect(response.name).toEqual('example');
+      expect(response.stock).toEqual(1);
+      expect(Array.from(response.tags)).toEqual(['red']);
+    });
+
+    it('find an object that doesnt exist', async () => {
+      const id = '5ff61d13c2feaf104339939c';
+
+      expect.assertions(1);
+      try {
+        await itemsService.findOne(id);
+      } catch (error) {
+        expect(error.status).toEqual(404);
+      }
+    });
+  });
+
+  describe('function findAll', () => {
+    beforeEach(async () => {
+      const itemOne = {
+        name: 'example',
+        stock: 1,
+        tags: ['red'],
+        creator: '5fff4b5d3d3bfee7bc02739f',
+      };
+      await ItemModel.create(itemOne);
+
+      const itemTwo = {
+        name: 'example',
+        stock: 0,
+        tags: ['red', 'blue'],
+        creator: '5fff4b5d3d3bfee7bc02739f',
+      };
+      await ItemModel.create(itemTwo);
+
+      const itemThree = {
+        name: 'otherName',
+        stock: 0,
+        tags: ['blue'],
+        creator: '5fff4b5d3d3bfee7bc02739f',
+      };
+      await ItemModel.create(itemThree);
+    });
+
+    it('find all objects', async () => {
+      const name = null;
+      const limit = 10;
+      const page = 1;
+
+      const response = await itemsService.findAll({
+        name,
+        limit,
+        page,
+      });
+
+      expect(response.totalDocs).toEqual(3);
+    });
+
+    it('find all objects with all filters', async () => {
+      const name = 'otherName';
+      const limit = 1;
+      const page = 1;
+
+      expect.assertions(1);
+
+      const response = await itemsService.findAll({
+        name,
+        limit,
+        page,
+      });
+
+      expect(response.totalDocs).toEqual(1);
+    });
+  });
+
+  describe('function update', () => {
+    it('update object', async () => {
+      const item = {
+        name: 'example',
+        stock: 1,
+        tags: ['red'],
+      };
+
+      const responseCreate = await ItemModel.create(item);
+
+      const itemUpdate = {
+        name: 'exampleUpdate',
+        stock: 2,
+        tags: ['black', 'blue'],
+      };
+      const response = await itemsService.update(
+        responseCreate._id.toString(),
+        itemUpdate,
+      );
+      expect(response).toBe(true);
+
+      const responseFind = await ItemModel.findById(responseCreate._id);
+
+      expect(responseFind.name).toEqual('exampleUpdate');
+      expect(responseFind.stock).toEqual(2);
+      expect(Array.from(responseFind.tags)).toEqual(['black', 'blue']);
+    });
+
+    it('update object that doesnt exist', async () => {
+      const id = '5ff61d13c2feaf104339939c';
+
+      const itemUpdate = {
+        name: 'exampleUpdate',
+        stock: 2,
+        tags: ['black', 'blue'],
+      };
+
+      const response = await itemsService.update(id, itemUpdate);
+      expect(response).toBe(false);
+    });
+  });
+
+  describe('function delete', () => {
+    it('delete object', async () => {
+      const item = {
+        name: 'example',
+        stock: 1,
+        tags: ['red'],
+        creator: '5fff4b5d3d3bfee7bc02739f',
+      };
+
+      const responseCreate = await ItemModel.create(item);
+      const response = await itemsService.delete(responseCreate._id.toString());
+
+      expect(response).toBe(true);
+
+      const responseFind = await ItemModel.findById(
+        responseCreate._id.toString(),
+      );
+      expect(responseFind).toBeNull();
+    });
+
+    it('delete object that doesnt exist', async () => {
+      const id = '5ff61d13c2feaf104339939c';
+
+      const response = await itemsService.delete(id);
+      expect(response).toBe(false);
+    });
+  });
+});
