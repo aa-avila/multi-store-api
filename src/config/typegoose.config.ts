@@ -5,6 +5,6 @@ export const TypegooseConfig = (
   config: ConfigService,
 ): TypegooseModuleOptions => ({
   uri: config.get('MONGO_URL'),
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+  // useNewUrlParser: true, // DEPRECATED OPTIONS
+  // useUnifiedTopology: true, //DEPRECATED OPTIONS
 });

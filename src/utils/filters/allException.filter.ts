@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from 'nestjs-pino';
-import { parse } from 'error-stack-parser';
 import { ErrorResponseDto } from '../errors/error.dto';
+// import { parse } from 'error-stack-parser';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -39,8 +39,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
             exception.response.message ||
             exception.message
           : `Internal server error: ${exception.message}`,
-      details:
-        this.config.get('NODE_ENV') !== 'production' ? parse(exception) : null,
+      details: null,
+      // TODO: fix this ==> this.config.get('NODE_ENV') !== 'production' ? parse(exception) : null,
     };
 
     this.logger.error(exception);
