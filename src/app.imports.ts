@@ -10,8 +10,6 @@ import { ProductsModule } from './products/products.module';
 import { AuthModule } from './auth/auth.module';
 import { BcryptModule } from './bcrypt/bcript.module';
 import { TypegooseConfig } from './config/typegoose.config';
-// import { PetsModule } from './pets/pets.module';
-// import { ItemsModule } from './items/items.module';
 
 export const AppImports = [
   ConfigModule.forRoot({
@@ -45,7 +43,5 @@ export const AppImports = [
   UsersModule,
   CategoriesModule,
   ProductsModule,
-  // PetsModule,
-  // ItemsModule,
   BcryptModule,
 ];
