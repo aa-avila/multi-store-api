@@ -10,9 +10,9 @@ import { ReturnModelType, DocumentType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { ResetPasswordRequestDto } from 'src/auth/dto/resetPasswordRequest.dto';
 import { User } from './users.model';
-import { BCRYPT } from '../bcrypt/bcrypt.const';
-import { Bcrypt } from '../bcrypt/bcrypt.provider';
-import { Role } from '../utils/enum/role';
+import { BCRYPT } from '../core/bcrypt/bcrypt.const';
+import { Bcrypt } from '../core/bcrypt/bcrypt.provider';
+import { Role } from '../core/enum/role';
 import { CreateUserRequestDto } from './dto/createUserRequest.dto';
 
 @Injectable()

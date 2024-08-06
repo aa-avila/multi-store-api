@@ -1,12 +1,12 @@
 import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { MongoIdValidation } from '../pipes/mongoId.pipe';
-import { apiErrorWrapper } from '../utils/factories/apiErrorWrapper.factory';
+import { MongoIdValidation } from '../core/pipes/mongoId.pipe';
+import { apiErrorWrapper } from '../core/factories/apiErrorWrapper.factory';
 import { Auth } from '../auth/auth.decorador';
-import { ErrorResponseDto } from '../utils/errors/error.dto';
-import { Roles } from '../utils/decorators/roles.decorator';
-import { Role } from '../utils/enum/role';
-import { apiResponseWrapper } from '../utils/factories/apiResponseWrapper.factory';
+import { ErrorResponseDto } from '../core/dto/error.dto';
+import { Roles } from '../core/decorators/roles.decorator';
+import { Role } from '../core/enum/role';
+import { apiResponseWrapper } from '../core/factories/apiResponseWrapper.factory';
 import { CreateUserRequestDto } from './dto/createUserRequest.dto';
 import { CreateUserResponseDto } from './dto/createUserResponse.dto';
 import { UsersService } from './users.service';

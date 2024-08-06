@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from 'nestjs-pino';
-import { ErrorResponseDto } from '../errors/error.dto';
+import { ErrorResponseDto } from '../dto/error.dto';
 // import { parse } from 'error-stack-parser';
 
 @Catch()

@@ -7,9 +7,9 @@ import { urlencoded, json } from 'express';
 import { Logger } from 'nestjs-pino';
 import { mongoose } from '@typegoose/typegoose';
 import { AppModule } from './app.module';
-import { AllExceptionsFilter } from './utils/filters/allException.filter';
-import { TimestampInterceptor } from './utils/interceptors/timestamp.interceptor';
-import { ResponseWrapperInterceptor } from './utils/interceptors/responseWrapper.interceptor';
+import { AllExceptionsFilter } from './core/filters/allException.filter';
+import { TimestampInterceptor } from './core/interceptors/timestamp.interceptor';
+import { ResponseWrapperInterceptor } from './core/interceptors/responseWrapper.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);

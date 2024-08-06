@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
-import { Role } from '../../utils/enum/role';
+import { Role } from '../../core/enum/role';
 
 export class LoginResponseDto {
   @ApiProperty()

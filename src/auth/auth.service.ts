@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { BCRYPT } from '../bcrypt/bcrypt.const';
-import { Bcrypt } from '../bcrypt/bcrypt.provider';
+import { BCRYPT } from '../core/bcrypt/bcrypt.const';
+import { Bcrypt } from '../core/bcrypt/bcrypt.provider';
 import { CreateUserResponseDto } from '../users/dto/createUserResponse.dto';
 import { User } from '../users/users.model';
 import { UsersService } from '../users/users.service';

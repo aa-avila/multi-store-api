@@ -5,7 +5,7 @@ import { getModelForClass, mongoose } from '@typegoose/typegoose';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { User } from './users.model';
-import { BCRYPT } from '../bcrypt/bcrypt.const';
+import { BCRYPT } from '../core/bcrypt/bcrypt.const';
 
 describe('UsersService', () => {
   let usersService: UsersService;

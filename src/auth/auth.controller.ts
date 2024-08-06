@@ -10,12 +10,12 @@ import {
 import { ApiTags, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
-import { apiResponseWrapper } from '../utils/factories/apiResponseWrapper.factory';
+import { apiResponseWrapper } from '../core/factories/apiResponseWrapper.factory';
 import { LoginResponseDto } from './dto/loginResponse.dto';
 import { LoginRequestDto } from './dto/loginRequest.dto';
 import { NewPasswordRequestDto } from './dto/newPasswordRequest.dto';
-import { apiErrorWrapper } from '../utils/factories/apiErrorWrapper.factory';
-import { ErrorResponseDto } from '../utils/errors/error.dto';
+import { apiErrorWrapper } from '../core/factories/apiErrorWrapper.factory';
+import { ErrorResponseDto } from '../core/dto/error.dto';
 import { ResetPasswordRequestDto } from './dto/resetPasswordRequest.dto';
 
 @ApiTags('Auth')

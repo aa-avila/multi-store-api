@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from '@nestjs/common';
-import { ErrorResponseDto } from '../errors/error.dto';
+import { ErrorResponseDto } from '../dto/error.dto';
 
 export function apiErrorWrapper(type: Type): any {
   class ResponseWrapper {

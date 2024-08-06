@@ -1,6 +1,6 @@
 import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { apiResponseWrapper } from '../utils/factories/apiResponseWrapper.factory';
+import { apiResponseWrapper } from '../core/factories/apiResponseWrapper.factory';
 import { HealthService } from './health.service';
 import { HealthDto } from './health.dto';
 
