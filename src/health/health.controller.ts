@@ -5,27 +5,11 @@ import { apiResponseWrapper } from '../utils/factories/apiResponseWrapper.factor
 import { HealthService } from './health.service';
 import { HealthDto } from './health.dto';
 import { Auth } from '../auth/auth.decorador';
-import { Roles } from '../utils/decorators/roles.decorator';
-import { Role } from '../utils/enum/role';
 
 @ApiTags('Health')
 @Controller()
 export class HealthController {
   constructor(private healthService: HealthService) {}
-
-  @ApiOperation({
-    summary: 'Ok',
-    description: 'Help endpoint to know if the service is operational',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: apiResponseWrapper(String),
-    description: 'Ok',
-  })
-  @Get()
-  getOk(): string {
-    return this.healthService.getOk();
-  }
 
   @ApiOperation({
     summary: 'Health',
@@ -37,7 +21,6 @@ export class HealthController {
     description: 'Ok',
   })
   @Auth()
-  @Roles(Role.ADMIN)
   @Get('/health')
   getHealthCheck(): HealthDto {
     return this.healthService.getHealthCheck();

@@ -1,7 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LoggerModule } from 'nestjs-pino';
-
 import { HealthService } from './health.service';
 
 describe('HealthService', () => {
@@ -22,12 +21,6 @@ describe('HealthService', () => {
   it('should be defined', () => {
     expect(healthService).toBeDefined();
     expect(configService).toBeDefined();
-  });
-
-  describe('function getOk', () => {
-    it('should return "Ok!"', () => {
-      expect(healthService.getOk()).toBe('Ok!');
-    });
   });
 
   describe('function getHealthCheck', () => {
