@@ -26,8 +26,4 @@ export class HealthService {
       appVersionPackage: this.configService.get('npm_package_version'),
     };
   }
-
-  getOk(): string {
-    return 'Ok!';
-  }
 }

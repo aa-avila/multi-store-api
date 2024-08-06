@@ -39,15 +39,6 @@ describe('Health Module (e2e)', () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  it('/ (GET)', async () => {
-    const {
-      status,
-      body: { data },
-    } = await request(app.getHttpServer()).get('/');
-    expect(status).toBe(200);
-    expect(data).toBe('Ok!');
-  });
-
   it('/health (GET)', async () => {
     const user = {
       email: 'test@test.com',
