@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { BCRYPT } from '../core/bcrypt/bcrypt.const';
 import { UsersService } from '../users/users.service';
-import { Role } from '../core/enum/role';
+import { Role } from '../core/auth/role.enum';
 import { User } from '../users/users.model';
 import { Bcrypt } from '../core/bcrypt/bcrypt.provider';
 

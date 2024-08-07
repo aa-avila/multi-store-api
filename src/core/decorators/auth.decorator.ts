@@ -2,8 +2,8 @@ import { applyDecorators, HttpStatus, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { apiErrorWrapper } from '../factories/apiErrorWrapper.factory';
 import { ErrorResponseDto } from '../dto/error.dto';
-import { JwtAuthGuard } from './jwt-auth.guard';
-import { RolesGuard } from './role.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/role.guard';
 
 export function Auth(): any {
   return applyDecorators(

@@ -1,6 +1,6 @@
 import { modelOptions, prop } from '@typegoose/typegoose';
 import { ObjectId } from 'mongoose';
-import { Role } from '../core/enum/role';
+import { Role } from '../core/auth/role.enum';
 
 @modelOptions({
   schemaOptions: {
