@@ -29,7 +29,7 @@ export class UsersService {
       const userHash: Partial<User> = { ...user };
 
       userHash.token = this.generateToken();
-      userHash.roles = [Role.OTHER];
+      userHash.roles = [Role.CUSTOMER];
       const newUser = await this.userModel.create(userHash);
 
       return newUser;

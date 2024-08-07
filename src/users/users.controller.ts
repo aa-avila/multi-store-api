@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MongoIdValidation } from '../core/pipes/mongoId.pipe';
 import { apiErrorWrapper } from '../core/factories/apiErrorWrapper.factory';
-import { Auth } from '../auth/auth.decorador';
+import { Auth } from '../core/auth/auth.decorator';
 import { ErrorResponseDto } from '../core/dto/error.dto';
 import { Roles } from '../core/decorators/roles.decorator';
 import { Role } from '../core/enum/role';
@@ -45,7 +45,7 @@ export class UsersController {
     description: 'Ok',
   })
   @Auth()
-  @Roles(Role.ADMIN)
+  @Roles(Role.SUPER_ADMIN)
   @Get('count')
   async count(): Promise<number> {
     return this.usersService.count();
@@ -70,7 +70,7 @@ export class UsersController {
     description: 'Not found',
   })
   @Auth()
-  @Roles(Role.ADMIN, Role.OTHER)
+  @Roles(Role.SUPER_ADMIN, Role.CUSTOMER)
   @Get(':id')
   async findOne(
     @Param('id', new MongoIdValidation()) id: string,

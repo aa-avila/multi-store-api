@@ -15,7 +15,7 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { apiResponseWrapper } from '../core/factories/apiResponseWrapper.factory';
 import { apiErrorWrapper } from '../core/factories/apiErrorWrapper.factory';
 import { ErrorResponseDto } from '../core/dto/error.dto';
-import { Auth } from '../auth/auth.decorador';
+import { Auth } from '../core/auth/auth.decorator';
 import { Role } from '../core/enum/role';
 import { Roles } from '../core/decorators/roles.decorator';
 import { MongoIdValidation } from '../core/pipes/mongoId.pipe';
@@ -39,7 +39,7 @@ export class ProductsController {
     description: 'Created',
   })
   @Auth()
-  @Roles(Role.ADMIN)
+  @Roles(Role.SUPER_ADMIN)
   @Post()
   async create(
     @Body() productData: CreateProductRequestDto,
@@ -112,7 +112,7 @@ export class ProductsController {
     description: 'Bad request',
   })
   @Auth()
-  @Roles(Role.ADMIN)
+  @Roles(Role.SUPER_ADMIN)
   @Put(':id')
   async update(
     @Param('id', new MongoIdValidation()) id: string,
@@ -135,7 +135,7 @@ export class ProductsController {
     description: 'Bad request',
   })
   @Auth()
-  @Roles(Role.ADMIN)
+  @Roles(Role.SUPER_ADMIN)
   @Delete(':id')
   async delete(
     @Param('id', new MongoIdValidation()) id: string,

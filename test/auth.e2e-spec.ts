@@ -7,7 +7,7 @@ import { AllExceptionsFilter } from '../src/core/filters/allException.filter';
 import { ResponseWrapperInterceptor } from '../src/core/interceptors/responseWrapper.interceptor';
 import { TimestampInterceptor } from '../src/core/interceptors/timestamp.interceptor';
 import { AppModule } from '../src/app.module';
-import { jwtCreator } from './helpers';
+// import { jwtCreator } from './helpers';
 
 describe('Auth Module (e2e)', () => {
   let app: INestApplication;
@@ -57,7 +57,7 @@ describe('Auth Module (e2e)', () => {
       expect(data.firstName).toEqual(user.firstName);
       expect(data.lastName).toEqual(user.lastName);
       expect(data.email).toEqual(user.email);
-      expect(data.roles).toEqual(['other']);
+      expect(data.roles).toEqual(['customer']);
       expect(data._id).toBeDefined();
       user = data;
     });
@@ -88,7 +88,7 @@ describe('Auth Module (e2e)', () => {
         .send({ password, email: user.email });
       expect(status).toBe(201);
       expect(data.email).toEqual(user.email);
-      expect(data.roles).toEqual(['other']);
+      expect(data.roles).toEqual(['customer']);
       expect(data._id).toBeDefined();
       expect(data.token).toBeDefined();
     });

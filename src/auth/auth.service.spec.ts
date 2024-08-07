@@ -64,7 +64,7 @@ describe('AuthService', () => {
         firstName: 'string',
         lastName: 'string',
         _id: '3322323',
-        roles: [Role.ADMIN],
+        roles: [Role.SUPER_ADMIN],
       };
 
       const response = await authService.login(user as unknown as User);
@@ -81,7 +81,7 @@ describe('AuthService', () => {
         lastName: 'string',
         _id: '3322323',
         password: '123456',
-        roles: [Role.ADMIN],
+        roles: [Role.SUPER_ADMIN],
       };
 
       const spy = jest
@@ -107,7 +107,7 @@ describe('AuthService', () => {
         lastName: 'string',
         _id: '3322323',
         password: '123456',
-        roles: [Role.ADMIN],
+        roles: [Role.SUPER_ADMIN],
       };
 
       const spy = jest

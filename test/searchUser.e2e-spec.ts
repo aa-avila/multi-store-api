@@ -40,7 +40,7 @@ describe('Serch User Module (e2e)', () => {
   describe('users flow', () => {
     let jwt: string;
     let user: any = {
-      email: 'test1@b21.com',
+      email: 'test1@test.com',
       firstName: 'string1',
       lastName: 'string1',
       token: null,
@@ -56,7 +56,7 @@ describe('Serch User Module (e2e)', () => {
       expect(data.firstName).toEqual(user.firstName);
       expect(data.lastName).toEqual(user.lastName);
       expect(data.email).toEqual(user.email);
-      expect(data.roles).toEqual(['other']);
+      expect(data.roles).toEqual(['customer']);
       expect(data._id).toBeDefined();
       user = data;
     });
