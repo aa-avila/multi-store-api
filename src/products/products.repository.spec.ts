@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from 'nestjs-typegoose';
 import { getModelForClass, mongoose } from '@typegoose/typegoose';
-import { Product } from './products.model';
+import { Product } from './model/products.model';
 import { ProductsRepository } from './products.repository';
 
 describe('ProductsRepository', () => {

@@ -13,7 +13,7 @@ import {
 } from 'mongoose';
 import * as mongoosePaginate from 'mongoose-paginate-v2';
 import * as mongooseDelete from 'mongoose-delete';
-import { Category } from '../categories/categories.model';
+import { Category } from '../../categories/categories.model';
 import { ProductSchema } from './products.schema';
 
 type PaginateMethod<T> = (

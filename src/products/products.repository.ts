@@ -4,8 +4,8 @@ import { InjectModel } from 'nestjs-typegoose';
 import { PaginateResult } from 'mongoose';
 import { ID } from '../common/types/id';
 import { IQueryFilters } from './interfaces/IQueryFilters';
-import { ProductDoc, ProductSchema } from './products.schema';
-import { Product } from './products.model';
+import { ProductDoc, ProductSchema } from './model/products.schema';
+import { Product } from './model/products.model';
 import { CreateDocResponse } from '../common/types/createDocResponse';
 
 @Injectable()
