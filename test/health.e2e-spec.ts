@@ -3,9 +3,9 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from 'nestjs-pino';
-import { ResponseWrapperInterceptor } from '../src/core/interceptors/responseWrapper.interceptor';
-import { TimestampInterceptor } from '../src/core/interceptors/timestamp.interceptor';
-import { AllExceptionsFilter } from '../src/core/filters/allException.filter';
+import { ResponseWrapperInterceptor } from '../src/common/interceptors/responseWrapper.interceptor';
+import { TimestampInterceptor } from '../src/common/interceptors/timestamp.interceptor';
+import { AllExceptionsFilter } from '../src/common/filters/allException.filter';
 import { AppModule } from '../src/app.module';
 import { jwtCreator } from './helpers';
 

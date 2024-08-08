@@ -3,7 +3,7 @@ import { TypegooseModule } from 'nestjs-typegoose';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { User } from './users.model';
-import { BcryptModule } from '../core/bcrypt/bcript.module';
+import { BcryptModule } from '../common/bcrypt/bcript.module';
 
 @Module({
   imports: [BcryptModule, TypegooseModule.forFeature([User])],

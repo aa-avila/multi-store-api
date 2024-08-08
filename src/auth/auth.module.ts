@@ -7,7 +7,7 @@ import { UsersModule } from '../users/users.module';
 import { LocalStrategy } from '../auth/strategies/local.strategy';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { BcryptModule } from '../core/bcrypt/bcript.module';
+import { BcryptModule } from '../common/bcrypt/bcript.module';
 
 @Module({
   imports: [

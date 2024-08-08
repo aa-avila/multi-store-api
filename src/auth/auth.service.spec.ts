@@ -3,11 +3,11 @@ import { JwtService } from '@nestjs/jwt';
 
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { BCRYPT } from '../core/bcrypt/bcrypt.const';
+import { BCRYPT } from '../common/bcrypt/bcrypt.const';
 import { UsersService } from '../users/users.service';
-import { Role } from '../core/enums/role.enum';
+import { Role } from '../common/enums/role.enum';
 import { User } from '../users/users.model';
-import { Bcrypt } from '../core/bcrypt/bcrypt.provider';
+import { Bcrypt } from '../common/bcrypt/bcrypt.provider';
 
 jest.mock('../users/users.service');
 jest.mock('@nestjs/jwt');

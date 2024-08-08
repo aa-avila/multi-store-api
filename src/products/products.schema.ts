@@ -1,4 +1,4 @@
-import { BaseDoc } from '../core/types/baseDoc.schema';
+import { BaseDoc } from '../common/types/baseDoc.schema';
 
 export type ProductSchema = {
   name: string;

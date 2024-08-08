@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginationDto } from '../../core/dto/pagination.dto';
+import { PaginationDto } from '../../common/dto/pagination.dto';
 import { CreateUserResponseDto } from './createUserResponse.dto';
 
 export class ListUserResponseDto {

@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { PaginateResult } from 'mongoose';
-import { ID } from '../core/types/id';
+import { ID } from '../common/types/id';
 import { IQueryFilters } from './interfaces/IQueryFilters';
 import { ProductDoc, ProductSchema } from './products.schema';
 import { Product } from './products.model';
-import { CreateDocResponse } from '../core/types/createDocResponse';
+import { CreateDocResponse } from '../common/types/createDocResponse';
 
 @Injectable()
 export class ProductsRepository {

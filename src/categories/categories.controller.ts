@@ -12,13 +12,13 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { apiResponseWrapper } from '../core/factories/apiResponseWrapper.factory';
-import { apiErrorWrapper } from '../core/factories/apiErrorWrapper.factory';
-import { ErrorResponseDto } from '../core/dto/error.dto';
-import { Auth } from '../core/decorators/auth.decorator';
-import { Role } from '../core/enums/role.enum';
-import { Roles } from '../core/decorators/roles.decorator';
-import { MongoIdValidation } from '../core/pipes/mongoId.pipe';
+import { apiResponseWrapper } from '../common/factories/apiResponseWrapper.factory';
+import { apiErrorWrapper } from '../common/factories/apiErrorWrapper.factory';
+import { ErrorResponseDto } from '../common/dto/error.dto';
+import { Auth } from '../common/decorators/auth.decorator';
+import { Role } from '../common/enums/role.enum';
+import { Roles } from '../common/decorators/roles.decorator';
+import { MongoIdValidation } from '../common/pipes/mongoId.pipe';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryRequestDto } from './dto/createCategoryRequest.dto';
 import { CreateCategoryResponseDto } from './dto/createCategoryResponse.dto';

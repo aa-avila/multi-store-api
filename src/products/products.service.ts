@@ -1,8 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ProductsRepository } from './products.repository';
-import { ID } from '../core/types/id';
+import { ID } from '../common/types/id';
 import { IQueryFilters } from './interfaces/IQueryFilters';
-import { CreateDocResponse } from '../core/types/createDocResponse';
+import { CreateDocResponse } from '../common/types/createDocResponse';
 import { CreateProductRequestDto } from './dto/createProductRequest.dto';
 import { GetAllProductsResponseDto } from './dto/getAllProductsResponse.dto';
 import { UpdateProductRequestDto } from './dto/updateProductRequest.dto';
