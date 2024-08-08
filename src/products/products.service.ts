@@ -1,47 +1,33 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { ReturnModelType, DocumentType } from '@typegoose/typegoose';
-import { InjectModel } from 'nestjs-typegoose';
-// import { Category } from 'src/categories/categories.model';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductRequestDto } from './dto/createProductRequest.dto';
-// import { CreateProductResponseDto } from './dto/createProductResponse.dto';
 import { ListProductResponseDto } from './dto/listProductResponse.dto';
 import { UpdateProductRequestDto } from './dto/updateProductRequest.dto';
-import { ListProductFilters } from './interfaces/listProductFilters.interface';
-import { Product } from './products.model';
+import { IQueryFilters } from './interfaces/IQueryFilters';
+import { ProductsRepository } from './products.repository';
+import { CreateDocResponse } from '../core/types/createDocResponse';
 
 @Injectable()
 export class ProductsService {
   constructor(
-    @InjectModel(Product)
-    private readonly productModel: ReturnModelType<typeof Product>,
+    @Inject(ProductsRepository)
+    private readonly repository: ProductsRepository,
   ) {}
 
   public async create(
-    productData: CreateProductRequestDto,
-  ): Promise<DocumentType<Product>> {
-    const response = await this.productModel.create(productData);
+    data: CreateProductRequestDto,
+  ): Promise<CreateDocResponse> {
+    const response = await this.repository.create(data);
     return response;
   }
 
-  public async findAll({
-    page,
-    limit,
-    name,
-  }: ListProductFilters): Promise<ListProductResponseDto> {
-    const filters: any = {};
-    if (name) {
-      filters.name = { $regex: name };
-    }
-    return this.productModel.paginate(filters, {
-      limit,
-      page,
-      populate: { path: 'category', select: { _id: 1, name: 1 } },
-    });
+  public async findAll(
+    queryFilters: IQueryFilters,
+  ): Promise<ListProductResponseDto> {
+    return this.repository.getAll(queryFilters);
   }
 
-  public async findOne(_id: string): Promise<DocumentType<Product>> {
-    const doc = await this.productModel.findOne({ _id });
-    // .populate<{ category: Category }>('category', { _id: 1, name: 1 });
+  public async findOne(id: string): Promise<any> {
+    const doc = await this.repository.getById(id);
     if (!doc) {
       throw new NotFoundException();
     }
@@ -52,16 +38,10 @@ export class ProductsService {
     _id: string,
     productData: UpdateProductRequestDto,
   ): Promise<boolean> {
-    const { modifiedCount } = await this.productModel.updateOne(
-      { _id },
-      productData,
-    );
-
-    return modifiedCount === 1;
+    return this.repository.update(_id, productData);
   }
 
   public async delete(_id: string): Promise<boolean> {
-    const { modifiedCount } = await this.productModel.deleteById(_id);
-    return modifiedCount === 1;
+    return this.repository.delete(_id);
   }
 }

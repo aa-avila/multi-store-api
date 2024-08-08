@@ -14,6 +14,7 @@ import {
 import * as mongoosePaginate from 'mongoose-paginate-v2';
 import * as mongooseDelete from 'mongoose-delete';
 import { Category } from '../categories/categories.model';
+import { ProductSchema } from './products.schema';
 
 type PaginateMethod<T> = (
   query?: FilterQuery<T>,
@@ -37,7 +38,7 @@ type DeleteMethod = (
 })
 @plugin(mongoosePaginate)
 @plugin(mongooseDelete, { deletedAt: true, overrideMethods: true })
-export class Product {
+export class Product implements ProductSchema {
   _id: ObjectId;
 
   @prop({ required: true, unique: true })
