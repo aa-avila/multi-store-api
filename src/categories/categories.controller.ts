@@ -16,7 +16,7 @@ import { apiResponseWrapper } from '../core/factories/apiResponseWrapper.factory
 import { apiErrorWrapper } from '../core/factories/apiErrorWrapper.factory';
 import { ErrorResponseDto } from '../core/dto/error.dto';
 import { Auth } from '../core/decorators/auth.decorator';
-import { Role } from '../core/auth/role.enum';
+import { Role } from '../core/enums/role.enum';
 import { Roles } from '../core/decorators/roles.decorator';
 import { MongoIdValidation } from '../core/pipes/mongoId.pipe';
 import { CategoriesService } from './categories.service';

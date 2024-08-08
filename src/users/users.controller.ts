@@ -5,7 +5,7 @@ import { apiErrorWrapper } from '../core/factories/apiErrorWrapper.factory';
 import { Auth } from '../core/decorators/auth.decorator';
 import { ErrorResponseDto } from '../core/dto/error.dto';
 import { Roles } from '../core/decorators/roles.decorator';
-import { Role } from '../core/auth/role.enum';
+import { Role } from '../core/enums/role.enum';
 import { apiResponseWrapper } from '../core/factories/apiResponseWrapper.factory';
 import { CreateUserRequestDto } from './dto/createUserRequest.dto';
 import { CreateUserResponseDto } from './dto/createUserResponse.dto';

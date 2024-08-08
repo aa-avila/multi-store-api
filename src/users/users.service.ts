@@ -12,7 +12,7 @@ import { ResetPasswordRequestDto } from 'src/auth/dto/resetPasswordRequest.dto';
 import { User } from './users.model';
 import { BCRYPT } from '../core/bcrypt/bcrypt.const';
 import { Bcrypt } from '../core/bcrypt/bcrypt.provider';
-import { Role } from '../core/auth/role.enum';
+import { Role } from '../core/enums/role.enum';
 import { CreateUserRequestDto } from './dto/createUserRequest.dto';
 
 @Injectable()

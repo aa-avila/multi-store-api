@@ -4,9 +4,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
-import { LocalStrategy } from '../core/auth/local.strategy';
+import { LocalStrategy } from '../auth/strategies/local.strategy';
 import { AuthController } from './auth.controller';
-import { JwtStrategy } from '../core/auth/jwt.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
 import { BcryptModule } from '../core/bcrypt/bcript.module';
 
 @Module({
