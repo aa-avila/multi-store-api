@@ -1,10 +1,11 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateProductRequestDto } from './dto/createProductRequest.dto';
-import { ListProductResponseDto } from './dto/listProductResponse.dto';
-import { UpdateProductRequestDto } from './dto/updateProductRequest.dto';
-import { IQueryFilters } from './interfaces/IQueryFilters';
 import { ProductsRepository } from './products.repository';
+import { ID } from '../core/types/id';
+import { IQueryFilters } from './interfaces/IQueryFilters';
 import { CreateDocResponse } from '../core/types/createDocResponse';
+import { CreateProductRequestDto } from './dto/createProductRequest.dto';
+import { GetAllProductsResponseDto } from './dto/getAllProductsResponse.dto';
+import { UpdateProductRequestDto } from './dto/updateProductRequest.dto';
 
 @Injectable()
 export class ProductsService {
@@ -20,13 +21,13 @@ export class ProductsService {
     return response;
   }
 
-  public async findAll(
+  public async getAll(
     queryFilters: IQueryFilters,
-  ): Promise<ListProductResponseDto> {
+  ): Promise<GetAllProductsResponseDto> {
     return this.repository.getAll(queryFilters);
   }
 
-  public async findOne(id: string): Promise<any> {
+  public async getById(id: ID): Promise<any> {
     const doc = await this.repository.getById(id);
     if (!doc) {
       throw new NotFoundException();
@@ -34,14 +35,14 @@ export class ProductsService {
     return doc;
   }
 
-  public async update(
-    _id: string,
+  public async updateById(
+    id: string,
     productData: UpdateProductRequestDto,
   ): Promise<boolean> {
-    return this.repository.update(_id, productData);
+    return this.repository.updateById(id, productData);
   }
 
-  public async delete(_id: string): Promise<boolean> {
-    return this.repository.delete(_id);
+  public async deleteById(id: string): Promise<boolean> {
+    return this.repository.deleteById(id);
   }
 }

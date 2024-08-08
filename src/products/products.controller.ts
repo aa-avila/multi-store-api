@@ -22,7 +22,7 @@ import { MongoIdValidation } from '../core/pipes/mongoId.pipe';
 import { ProductsService } from './products.service';
 import { CreateProductRequestDto } from './dto/createProductRequest.dto';
 import { CreateProductResponseDto } from './dto/createProductResponse.dto';
-import { ListProductResponseDto } from './dto/listProductResponse.dto';
+import { GetAllProductsResponseDto } from './dto/getAllProductsResponse.dto';
 import { UpdateProductRequestDto } from './dto/updateProductRequest.dto';
 
 @ApiTags('Products')
@@ -31,12 +31,28 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @ApiOperation({
-    summary: 'Create a product',
+    summary: 'Create product',
+    description: 'Creates a product',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
     type: apiResponseWrapper(CreateProductResponseDto),
     description: 'Created',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Bad request',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Forbidden',
   })
   @Auth()
   @Roles(Role.SUPER_ADMIN)
@@ -49,11 +65,12 @@ export class ProductsController {
 
   @ApiOperation({
     summary: 'Get all products',
-    description: 'Category is populated, only fields "_id" & "name"',
+    description:
+      'Gets all products that match with the provided query filters ',
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: apiResponseWrapper(ListProductResponseDto),
+    type: apiResponseWrapper(GetAllProductsResponseDto),
     description: 'Ok',
   })
   @ApiQuery({ name: 'page', required: false, type: Number })
@@ -62,10 +79,10 @@ export class ProductsController {
   @Get()
   async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit: number,
     @Query('name') name?: string,
-  ): Promise<ListProductResponseDto> {
-    return this.productsService.findAll({
+  ): Promise<GetAllProductsResponseDto> {
+    return this.productsService.getAll({
       page,
       limit,
       name,
@@ -73,8 +90,8 @@ export class ProductsController {
   }
 
   @ApiOperation({
-    summary: 'Find one product by id',
-    description: 'Category is populated, only fields "_id" & "name"',
+    summary: 'Get product by id',
+    description: 'Gets a product by id',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -92,19 +109,30 @@ export class ProductsController {
     description: 'Not found',
   })
   @Get(':id')
-  async findOne(
+  async getById(
     @Param('id', new MongoIdValidation()) id: string,
   ): Promise<CreateProductResponseDto> {
-    return this.productsService.findOne(id);
+    return this.productsService.getById(id);
   }
 
   @ApiOperation({
-    summary: 'Update one product by id',
+    summary: 'Update product by id',
+    description: 'Updates a product by id',
   })
   @ApiResponse({
     status: HttpStatus.OK,
     type: apiResponseWrapper(Boolean),
     description: 'Ok',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Forbidden',
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -114,11 +142,11 @@ export class ProductsController {
   @Auth()
   @Roles(Role.SUPER_ADMIN)
   @Put(':id')
-  async update(
+  async updateById(
     @Param('id', new MongoIdValidation()) id: string,
     @Body() item: UpdateProductRequestDto,
   ): Promise<boolean> {
-    return this.productsService.update(id, item);
+    return this.productsService.updateById(id, item);
   }
 
   @ApiOperation({
@@ -130,6 +158,16 @@ export class ProductsController {
     description: 'Ok',
   })
   @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Forbidden',
+  })
+  @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     type: apiErrorWrapper(ErrorResponseDto),
     description: 'Bad request',
@@ -137,9 +175,9 @@ export class ProductsController {
   @Auth()
   @Roles(Role.SUPER_ADMIN)
   @Delete(':id')
-  async delete(
+  async deleteById(
     @Param('id', new MongoIdValidation()) id: string,
   ): Promise<boolean> {
-    return this.productsService.delete(id);
+    return this.productsService.deleteById(id);
   }
 }
