@@ -54,7 +54,7 @@ export class Product implements ProductSchema {
   display: boolean;
 
   @prop({ ref: () => Category, type: () => String })
-  category: Ref<Category, string>;
+  category?: Ref<Category, string>;
 
   static paginate: PaginateMethod<Product>;
 

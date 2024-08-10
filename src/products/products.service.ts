@@ -3,7 +3,7 @@ import { ProductsRepository } from './products.repository';
 import { ID } from '../common/types/id';
 import { IQueryParams } from './interfaces/IQueryParams';
 import { CreateDocResponse } from '../common/types/createDocResponse';
-import { CreateProductRequestDto } from './dto/createProductRequest.dto';
+import { ICreateProduct } from './interfaces/ICreateProduct';
 import { GetAllProductsResponseDto } from './dto/getAllProductsResponse.dto';
 import { UpdateProductRequestDto } from './dto/updateProductRequest.dto';
 
@@ -14,9 +14,7 @@ export class ProductsService {
     private readonly repository: ProductsRepository,
   ) {}
 
-  public async create(
-    data: CreateProductRequestDto,
-  ): Promise<CreateDocResponse> {
+  public async create(data: ICreateProduct): Promise<CreateDocResponse> {
     const response = await this.repository.create(data);
     return response;
   }

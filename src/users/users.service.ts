@@ -9,7 +9,7 @@ import {
 import { ReturnModelType, DocumentType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { ResetPasswordRequestDto } from 'src/auth/dto/resetPasswordRequest.dto';
-import { User } from './users.model';
+import { User } from './model/users.model';
 import { BCRYPT } from '../common/bcrypt/bcrypt.const';
 import { Bcrypt } from '../common/bcrypt/bcrypt.provider';
 import { Role } from '../common/enums/role.enum';

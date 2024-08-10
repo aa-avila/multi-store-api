@@ -6,7 +6,7 @@ import { AuthController } from './auth.controller';
 import { BCRYPT } from '../common/bcrypt/bcrypt.const';
 import { UsersService } from '../users/users.service';
 import { Role } from '../common/enums/role.enum';
-import { User } from '../users/users.model';
+import { User } from '../users/model/users.model';
 import { Bcrypt } from '../common/bcrypt/bcrypt.provider';
 
 jest.mock('../users/users.service');

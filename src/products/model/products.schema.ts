@@ -5,7 +5,7 @@ export type ProductSchema = {
   description: string;
   images: string[];
   display: boolean;
-  category: string | any; // TODO: type
+  category?: string | any; // TODO: type
 };
 
 export type ProductDoc = ProductSchema & BaseDoc;
