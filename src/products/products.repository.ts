@@ -3,7 +3,7 @@ import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { PaginateResult } from 'mongoose';
 import { ID } from '../common/types/id';
-import { IQueryFilters } from './interfaces/IQueryFilters';
+import { IQueryParams } from './interfaces/IQueryParams';
 import { ProductDoc, ProductSchema } from './model/products.schema';
 import { Product } from './model/products.model';
 import { CreateDocResponse } from '../common/types/createDocResponse';
@@ -24,10 +24,14 @@ export class ProductsRepository {
     page,
     limit,
     name,
-  }: IQueryFilters): Promise<PaginateResult<ProductDoc>> {
+    companyId,
+  }: IQueryParams): Promise<PaginateResult<ProductDoc>> {
     const filters: any = {};
     if (name) {
       filters.name = { $regex: name };
+    }
+    if (companyId) {
+      filters.companyId = companyId;
     }
     const result = await this.model.paginate(filters, {
       limit,

@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ProductsRepository } from './products.repository';
 import { ID } from '../common/types/id';
-import { IQueryFilters } from './interfaces/IQueryFilters';
+import { IQueryParams } from './interfaces/IQueryParams';
 import { CreateDocResponse } from '../common/types/createDocResponse';
 import { CreateProductRequestDto } from './dto/createProductRequest.dto';
 import { GetAllProductsResponseDto } from './dto/getAllProductsResponse.dto';
@@ -22,7 +22,7 @@ export class ProductsService {
   }
 
   public async getAll(
-    queryFilters: IQueryFilters,
+    queryFilters: IQueryParams,
   ): Promise<GetAllProductsResponseDto> {
     return this.repository.getAll(queryFilters);
   }

@@ -18,6 +18,8 @@ import { ErrorResponseDto } from '../common/dto/error.dto';
 import { Auth } from '../common/decorators/auth.decorator';
 import { Role } from '../common/enums/role.enum';
 import { Roles } from '../common/decorators/roles.decorator';
+import { User } from '../common/decorators/user.decorator';
+import { UserAuth } from '../common/types/userAuth';
 import { MongoIdValidation } from '../common/pipes/mongoId.pipe';
 import { ProductsService } from './products.service';
 import { CreateProductRequestDto } from './dto/createProductRequest.dto';
@@ -30,6 +32,36 @@ import { UpdateProductRequestDto } from './dto/updateProductRequest.dto';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  // ******* SUPER_ADMIN *******
+  @ApiOperation({
+    summary: 'Get all products',
+    description:
+      'Gets all products that match with the provided query filters ',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: apiResponseWrapper(GetAllProductsResponseDto),
+    description: 'Ok',
+  })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'name', required: false, type: String })
+  @Get()
+  async getAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit: number,
+    @Query('name') name?: string,
+    @Query('companyId') companyId?: string,
+  ): Promise<GetAllProductsResponseDto> {
+    return this.productsService.getAll({
+      page,
+      limit,
+      name,
+      companyId,
+    });
+  }
+
+  // ******* SUPER_ADMIN + COMPANY_ADMIN *******
   @ApiOperation({
     summary: 'Create product',
     description: 'Creates a product',
@@ -61,32 +93,6 @@ export class ProductsController {
     @Body() productData: CreateProductRequestDto,
   ): Promise<CreateProductResponseDto> {
     return this.productsService.create(productData);
-  }
-
-  @ApiOperation({
-    summary: 'Get all products',
-    description:
-      'Gets all products that match with the provided query filters ',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: apiResponseWrapper(GetAllProductsResponseDto),
-    description: 'Ok',
-  })
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'limit', required: false, type: Number })
-  @ApiQuery({ name: 'name', required: false, type: String })
-  @Get()
-  async findAll(
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit: number,
-    @Query('name') name?: string,
-  ): Promise<GetAllProductsResponseDto> {
-    return this.productsService.getAll({
-      page,
-      limit,
-      name,
-    });
   }
 
   @ApiOperation({
@@ -179,5 +185,34 @@ export class ProductsController {
     @Param('id', new MongoIdValidation()) id: string,
   ): Promise<boolean> {
     return this.productsService.deleteById(id);
+  }
+
+  // ******* COMPANY_ADMIN *******
+  @ApiOperation({
+    summary: 'Get all products (own company)',
+    description:
+      'Gets all -own company- products that match with the provided query filters ',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: apiResponseWrapper(GetAllProductsResponseDto),
+    description: 'Ok',
+  })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'name', required: false, type: String })
+  @Get()
+  async getAllOwn(
+    @User() user: UserAuth,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit: number,
+    @Query('name') name?: string,
+  ): Promise<GetAllProductsResponseDto> {
+    return this.productsService.getAll({
+      page,
+      limit,
+      name,
+      companyId: user.companyId,
+    });
   }
 }
