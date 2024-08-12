@@ -201,7 +201,7 @@ export class ProductsController {
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'name', required: false, type: String })
-  @Get()
+  @Get('me')
   async getAllOwn(
     @User() user: UserAuth,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,

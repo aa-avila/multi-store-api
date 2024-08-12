@@ -1,31 +1,13 @@
-import {
-  modelOptions,
-  prop,
-  plugin,
-  mongoose,
-  Ref,
-} from '@typegoose/typegoose';
-import {
-  FilterQuery,
-  ObjectId,
-  PaginateOptions,
-  PaginateResult,
-} from 'mongoose';
+import { modelOptions, prop, plugin, Ref } from '@typegoose/typegoose';
+import { ObjectId } from 'mongoose';
 import * as mongoosePaginate from 'mongoose-paginate-v2';
 import * as mongooseDelete from 'mongoose-delete';
+import {
+  DeleteMethod,
+  PaginateMethod,
+} from '../../common/types/mongoCommonTypes';
 import { Category } from '../../categories/categories.model';
 import { ProductSchema } from './products.schema';
-
-type PaginateMethod<T> = (
-  query?: FilterQuery<T>,
-  options?: PaginateOptions,
-  callback?: (err: any, result: PaginateResult<T>) => void,
-) => Promise<PaginateResult<T>>;
-
-type DeleteMethod = (
-  id?: string | mongoose.Types.ObjectId,
-  deleteBy?: string | mongoose.Types.ObjectId | mongoose.Document,
-) => Promise<any>;
 
 @modelOptions({
   schemaOptions: {

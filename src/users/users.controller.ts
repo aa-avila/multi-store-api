@@ -75,6 +75,6 @@ export class UsersController {
   async findOne(
     @Param('id', new MongoIdValidation()) id: string,
   ): Promise<CreateUserResponseDto> {
-    return this.usersService.findOne(id);
+    return this.usersService.getById(id);
   }
 }

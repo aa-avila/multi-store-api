@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 
@@ -28,7 +27,7 @@ describe('AuthController', () => {
     it('login user', async () => {
       const req = {
         user: {
-          email: 'test@b21.com',
+          email: 'test@example.com',
           password: 'string',
         },
       };
@@ -37,8 +36,8 @@ describe('AuthController', () => {
 
       await authController.login(req);
 
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -51,8 +50,8 @@ describe('AuthController', () => {
         password: 'string',
       });
 
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -61,11 +60,11 @@ describe('AuthController', () => {
       const spy = jest.spyOn(authService, 'resetPassword');
 
       await authController.resetPassword({
-        email: 'test@b21.com',
+        email: 'test@example.com',
       });
 
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 });

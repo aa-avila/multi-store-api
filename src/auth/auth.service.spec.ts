@@ -1,16 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
-
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { BCRYPT } from '../common/bcrypt/bcrypt.const';
 import { UsersService } from '../users/users.service';
 import { Role } from '../common/enums/role.enum';
-import { User } from '../users/model/users.model';
 import { Bcrypt } from '../common/bcrypt/bcrypt.provider';
+import { UserDoc } from '../users/model/users.schema';
 
 jest.mock('../users/users.service');
 jest.mock('@nestjs/jwt');
+
+const userData: UserDoc = {
+  id: '11223344',
+  email: 'test@example.com',
+  firstName: 'Pepito',
+  lastName: 'Juarez',
+  password: '12345678',
+  roles: [Role.SUPER_ADMIN],
+};
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -52,82 +60,51 @@ describe('AuthService', () => {
 
       await authService.newPassword({ token: '123456', password: 'string' });
 
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('function login', () => {
     it('login user', async () => {
-      const user = {
-        email: 'test@b21.com',
-        firstName: 'string',
-        lastName: 'string',
-        _id: '3322323',
-        roles: [Role.SUPER_ADMIN],
-      };
-
-      const response = await authService.login(user as unknown as User);
-
+      const response = await authService.login(userData);
       expect(response).toBeDefined();
     });
   });
 
   describe('function validateUser', () => {
     it('validate  user', async () => {
-      const user = {
-        email: 'test@b21.com',
-        firstName: 'string',
-        lastName: 'string',
-        _id: '3322323',
-        password: '123456',
-        roles: [Role.SUPER_ADMIN],
-      };
-
       const spy = jest
-        .spyOn(usersService, 'findByEmail')
-        .mockImplementation(() => Promise.resolve(user as unknown as User));
+        .spyOn(usersService, 'getByEmail')
+        .mockImplementation(() => Promise.resolve(userData));
 
       const response = await authService.validateUser(
-        user.email,
-        user.password,
+        userData.email,
+        userData.password,
       );
 
       expect(response).toBeDefined();
-
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
       spy.mockRestore();
     });
 
     it('validate  user bad password', async () => {
-      const user = {
-        email: 'test@b21.com',
-        firstName: 'string',
-        lastName: 'string',
-        _id: '3322323',
-        password: '123456',
-        roles: [Role.SUPER_ADMIN],
-      };
-
       const spy = jest
-        .spyOn(usersService, 'findByEmail')
-        .mockImplementation(() => Promise.resolve(user as unknown as User));
-
+        .spyOn(usersService, 'getByEmail')
+        .mockImplementation(() => Promise.resolve(userData));
       const spyBycript = jest
         .spyOn(bcryptProvider, 'compareSync')
         .mockImplementation(() => false);
 
       const response = await authService.validateUser(
-        user.email,
-        user.password,
+        userData.email,
+        userData.password,
       );
 
       expect(response).toBeNull();
-
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledTimes(1);
-
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
       spy.mockRestore();
       spyBycript.mockRestore();
     });
@@ -136,10 +113,10 @@ describe('AuthService', () => {
     it('reset password', async () => {
       const spy = jest.spyOn(usersService, 'resetPassword');
 
-      await authService.resetPassword({ email: 'test@b21.com' });
+      await authService.resetPassword({ email: 'test@example.com' });
 
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 });

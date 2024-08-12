@@ -9,7 +9,7 @@ export class LoginResponseDto {
   @ApiProperty({ example: '61d433863260b40e79f87db1' })
   _id: ObjectId;
 
-  @ApiProperty({ example: 'test@b21.com.cl' })
+  @ApiProperty({ example: 'test@example.com.cl' })
   email: string;
 
   @ApiProperty({ enum: Role, isArray: true })

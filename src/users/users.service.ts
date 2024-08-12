@@ -6,37 +6,47 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { ReturnModelType, DocumentType } from '@typegoose/typegoose';
-import { InjectModel } from 'nestjs-typegoose';
-import { ResetPasswordRequestDto } from 'src/auth/dto/resetPasswordRequest.dto';
-import { User } from './model/users.model';
+import { UsersRepository } from './users.repository';
+import { ResetPasswordRequestDto } from '../auth/dto/resetPasswordRequest.dto';
+import { UserDoc, UserSchema } from './model/users.schema';
+import { ID } from '../common/types/id';
+import { ICreateUser } from './interfaces/ICreateUser';
+import { CreateDocResponse } from '../common/types/createDocResponse';
 import { BCRYPT } from '../common/bcrypt/bcrypt.const';
 import { Bcrypt } from '../common/bcrypt/bcrypt.provider';
 import { Role } from '../common/enums/role.enum';
-import { CreateUserRequestDto } from './dto/createUserRequest.dto';
 
 @Injectable()
 export class UsersService {
   saltRounds = 10;
 
   constructor(
-    @InjectModel(User) private readonly userModel: ReturnModelType<typeof User>,
-    @Inject(BCRYPT) public bcryptProvider: Bcrypt,
+    @Inject(UsersRepository)
+    private readonly repository: UsersRepository,
+    @Inject(BCRYPT)
+    public bcryptProvider: Bcrypt,
   ) {}
 
-  async create(user: CreateUserRequestDto): Promise<DocumentType<User>> {
+  generateToken(): string {
+    return `${this.bcryptProvider.genSaltSync()}`;
+  }
+
+  generatePassword(password: string): string {
+    return this.bcryptProvider.hashSync(password, this.saltRounds);
+  }
+
+  async create(user: ICreateUser): Promise<CreateDocResponse> {
     try {
-      const userHash: Partial<User> = { ...user };
-
-      userHash.token = this.generateToken();
-      userHash.roles = [Role.CUSTOMER];
-      const newUser = await this.userModel.create(userHash);
-
-      return newUser;
+      const token = this.generateToken();
+      const roles = [Role.CUSTOMER];
+      const userPartial: UserSchema = { ...user, token, roles };
+      const response = await this.repository.createUser(userPartial);
+      // TODO: send token by email
+      return response;
     } catch (error) {
-      if (error.code === 11000)
+      if (error.code === 11000) {
         throw new HttpException('Email already exists', HttpStatus.CONFLICT);
-
+      }
       throw new InternalServerErrorException(error);
     }
   }
@@ -48,50 +58,45 @@ export class UsersService {
     token: string;
     password: string;
   }): Promise<boolean> {
-    const { modifiedCount } = await this.userModel.updateOne(
-      {
-        token,
-      },
-      { password: this.generatePassword(password) },
+    const passwordHash = this.generatePassword(password);
+    const result = await this.repository.setPasswordByToken(
+      token,
+      passwordHash,
     );
-
-    return !!modifiedCount;
-  }
-
-  async findByEmail(email: string): Promise<User> {
-    return this.userModel.findOne({ email });
-  }
-
-  async findOne(_id: string): Promise<DocumentType<User>> {
-    const response = await this.userModel.findOne({ _id });
-    if (!response) {
+    if (!result) {
       throw new NotFoundException();
     }
-    return response;
-  }
-
-  generateToken(): string {
-    return `${this.bcryptProvider.genSaltSync()}`;
-  }
-
-  generatePassword(password: string): string {
-    return this.bcryptProvider.hashSync(password, this.saltRounds);
-  }
-
-  async count(): Promise<number> {
-    const total = await this.userModel.estimatedDocumentCount();
-    return total;
+    // TODO: send email notification
+    return result;
   }
 
   async resetPassword({ email }: ResetPasswordRequestDto): Promise<boolean> {
-    const { modifiedCount } = await this.userModel.updateOne(
-      {
-        email,
-      },
-      { token: this.generateToken() },
-    );
-    /// TODO send token by email
+    const token = this.generateToken();
+    const result = await this.repository.setTokenByEmail(email, token);
+    if (!result) {
+      throw new NotFoundException();
+    }
+    // TODO: send token by email
+    return result;
+  }
 
-    return !!modifiedCount;
+  public async getById(id: ID): Promise<UserDoc> {
+    const doc = await this.repository.getById(id);
+    if (!doc) {
+      throw new NotFoundException();
+    }
+    return doc;
+  }
+
+  async getByEmail(email: string): Promise<UserDoc> {
+    const doc = await this.repository.getByEmail(email);
+    if (!doc) {
+      throw new NotFoundException();
+    }
+    return doc;
+  }
+
+  async count(): Promise<number> {
+    return this.repository.count();
   }
 }

@@ -39,7 +39,7 @@ describe('Auth Module (e2e)', () => {
 
   describe('auth flow', () => {
     let user: any = {
-      email: 'test@b21.com',
+      email: 'test@example.com',
       firstName: 'string',
       lastName: 'string',
       token: null,

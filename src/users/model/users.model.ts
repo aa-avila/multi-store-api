@@ -1,6 +1,18 @@
-import { modelOptions, prop } from '@typegoose/typegoose';
+import {
+  modelOptions,
+  prop,
+  plugin,
+  // Ref,
+} from '@typegoose/typegoose';
 import { ObjectId } from 'mongoose';
+import * as mongoosePaginate from 'mongoose-paginate-v2';
+import * as mongooseDelete from 'mongoose-delete';
+import {
+  DeleteMethod,
+  PaginateMethod,
+} from '../../common/types/mongoCommonTypes';
 import { Role } from '../../common/enums/role.enum';
+import { UserSchema } from './users.schema';
 
 @modelOptions({
   schemaOptions: {
@@ -11,7 +23,9 @@ import { Role } from '../../common/enums/role.enum';
     },
   },
 })
-export class User {
+@plugin(mongoosePaginate)
+@plugin(mongooseDelete, { deletedAt: true, overrideMethods: true })
+export class User implements UserSchema {
   _id: ObjectId;
 
   @prop({ required: true, unique: true })
@@ -31,4 +45,8 @@ export class User {
 
   @prop()
   token?: string;
+
+  static paginate: PaginateMethod<User>;
+
+  static deleteById: DeleteMethod;
 }

@@ -27,7 +27,7 @@ describe('UsersController', () => {
   describe('function create', () => {
     it('create one object', async () => {
       const user = {
-        email: 'test@b21.com',
+        email: 'test@example.com',
         firstName: 'string',
         lastName: 'string',
       };

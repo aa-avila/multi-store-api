@@ -4,6 +4,6 @@ import { IsNotEmpty, IsEmail } from 'class-validator';
 export class ResetPasswordRequestDto {
   @IsEmail()
   @IsNotEmpty()
-  @ApiProperty({ example: 'test@b21.com.cl' })
+  @ApiProperty({ example: 'test@example.com.cl' })
   email: string;
 }

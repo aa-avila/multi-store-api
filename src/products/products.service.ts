@@ -1,11 +1,11 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ProductsRepository } from './products.repository';
+import { PaginateResult } from 'mongoose';
 import { ID } from '../common/types/id';
 import { IQueryParams } from './interfaces/IQueryParams';
 import { CreateDocResponse } from '../common/types/createDocResponse';
 import { ICreateProduct } from './interfaces/ICreateProduct';
-import { GetAllProductsResponseDto } from './dto/getAllProductsResponse.dto';
-import { UpdateProductRequestDto } from './dto/updateProductRequest.dto';
+import { ProductDoc } from './model/products.schema';
 
 @Injectable()
 export class ProductsService {
@@ -21,11 +21,11 @@ export class ProductsService {
 
   public async getAll(
     queryFilters: IQueryParams,
-  ): Promise<GetAllProductsResponseDto> {
+  ): Promise<PaginateResult<ProductDoc>> {
     return this.repository.getAll(queryFilters);
   }
 
-  public async getById(id: ID): Promise<any> {
+  public async getById(id: ID): Promise<ProductDoc> {
     const doc = await this.repository.getById(id);
     if (!doc) {
       throw new NotFoundException();
@@ -35,12 +35,20 @@ export class ProductsService {
 
   public async updateById(
     id: string,
-    productData: UpdateProductRequestDto,
+    productData: Partial<ICreateProduct>,
   ): Promise<boolean> {
-    return this.repository.updateById(id, productData);
+    const result = await this.repository.updateById(id, productData);
+    if (!result) {
+      throw new NotFoundException();
+    }
+    return result;
   }
 
   public async deleteById(id: string): Promise<boolean> {
-    return this.repository.deleteById(id);
+    const result = await this.repository.deleteById(id);
+    if (!result) {
+      throw new NotFoundException();
+    }
+    return result;
   }
 }

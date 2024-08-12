@@ -7,6 +7,8 @@ import { IQueryParams } from './interfaces/IQueryParams';
 import { ProductDoc, ProductSchema } from './model/products.schema';
 import { Product } from './model/products.model';
 import { CreateDocResponse } from '../common/types/createDocResponse';
+import { mongoCreateDocResponseParser } from '../common/utils/mongoCreateDocResponseParser';
+import { mongoDocResponseParser } from '../common/utils/mongoDocResponseParser';
 
 @Injectable()
 export class ProductsRepository {
@@ -17,7 +19,7 @@ export class ProductsRepository {
 
   public async create(data: ProductSchema): Promise<CreateDocResponse> {
     const response = await this.model.create(data);
-    return { id: response._id.toString() };
+    return mongoCreateDocResponseParser(response);
   }
 
   public async getAll({
@@ -41,8 +43,7 @@ export class ProductsRepository {
     return {
       ...result,
       docs: result.docs.map((doc) => {
-        const { _id, ...rest } = doc;
-        return { id: _id.toString(), ...rest };
+        return mongoDocResponseParser<ProductDoc>(doc);
       }),
     };
   }
@@ -54,11 +55,7 @@ export class ProductsRepository {
     if (!doc) {
       return undefined;
     }
-    const { _id: mongoId, ...rest } = doc;
-    return {
-      id: mongoId.toString(),
-      ...rest,
-    };
+    mongoDocResponseParser<ProductDoc>(doc);
   }
 
   public async updateById(

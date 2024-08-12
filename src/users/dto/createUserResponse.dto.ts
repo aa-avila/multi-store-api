@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ObjectId } from 'mongoose';
-import { CreateUserRequestDto } from './createUserRequest.dto';
+import { ID } from '../../common/types/id';
 
-export class CreateUserResponseDto extends CreateUserRequestDto {
+export class CreateUserResponseDto {
   @ApiProperty({ example: '61d433863260b40e79f87db1' })
-  _id: ObjectId;
+  id: ID;
 }

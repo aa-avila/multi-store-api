@@ -1,11 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from 'nestjs-typegoose';
 import { getModelForClass, mongoose } from '@typegoose/typegoose';
-
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { User } from './model/users.model';
 import { BCRYPT } from '../common/bcrypt/bcrypt.const';
+
+const userCreateData = {
+  email: 'test@example.com',
+  firstName: 'Pepito',
+  lastName: 'Perez',
+};
 
 describe('UsersService', () => {
   let usersService: UsersService;
@@ -51,28 +56,15 @@ describe('UsersService', () => {
 
   describe('function create', () => {
     it('create one object', async () => {
-      const user = {
-        email: 'test@b21.com',
-        firstName: 'string',
-        lastName: 'string',
-      };
-
-      const response = await usersService.create(user);
-      expect(response.firstName).toEqual(user.firstName);
-      expect(response.lastName).toEqual(user.lastName);
-      expect(response.email).toEqual(user.email);
+      const response = await usersService.create(userCreateData);
+      expect(response.id).toBeDefined();
     });
 
     it('duplicate email', async () => {
-      const user = {
-        email: 'test@b21.com',
-        firstName: 'string',
-        lastName: 'string',
-      };
-      await UserModel.create(user);
+      await UserModel.create(userCreateData);
 
       try {
-        await usersService.create(user);
+        await usersService.create(userCreateData);
       } catch (error) {
         expect(error.status).toEqual(409);
       }
@@ -89,37 +81,25 @@ describe('UsersService', () => {
 
   describe('function findByEmail', () => {
     it('find by email', async () => {
-      const user = {
-        email: 'test@b21.com',
-        firstName: 'string',
-        lastName: 'string',
-      };
-
-      await UserModel.create(user);
-      const response = await usersService.findByEmail(user.email);
+      await UserModel.create(userCreateData);
+      const response = await usersService.getByEmail(userCreateData.email);
       expect(response).toBeDefined();
     });
   });
 
   describe('function findOne', () => {
     it('find one User', async () => {
-      const user = {
-        email: 'test@b21.com',
-        firstName: 'string',
-        lastName: 'string',
-      };
-
-      const createUser = await UserModel.create(user);
-      const response = await usersService.findOne(createUser._id.toString());
-      expect(response.email).toEqual(user.email);
-      expect(response.firstName).toEqual(user.firstName);
-      expect(response.lastName).toEqual(user.lastName);
+      const createUser = await UserModel.create(userCreateData);
+      const response = await usersService.getById(createUser.id);
+      expect(response.email).toEqual(userCreateData.email);
+      expect(response.firstName).toEqual(userCreateData.firstName);
+      expect(response.lastName).toEqual(userCreateData.lastName);
     });
 
     it('find an user that doesnt exist', async () => {
       const id = '61d4c1b0bb013bc318c951d4';
       try {
-        await usersService.findOne(id);
+        await usersService.getById(id);
       } catch (error) {
         expect(error).toBeDefined();
       }
@@ -128,13 +108,7 @@ describe('UsersService', () => {
 
   describe('function count', () => {
     it('count objects', async () => {
-      const user = {
-        email: 'test@b21.com',
-        firstName: 'string',
-        lastName: 'string',
-      };
-
-      await UserModel.create(user);
+      await UserModel.create(userCreateData);
       const response = await usersService.count();
       expect(response).toEqual(1);
     });
@@ -143,9 +117,7 @@ describe('UsersService', () => {
   describe('function newPassword', () => {
     it('new password', async () => {
       const user = {
-        email: 'test@b21.com',
-        firstName: 'string',
-        lastName: 'string',
+        ...userCreateData,
         token: '1234',
       };
 
@@ -165,9 +137,7 @@ describe('UsersService', () => {
 
     it('not found', async () => {
       const user = {
-        email: 'test@b21.com',
-        firstName: 'string',
-        lastName: 'string',
+        ...userCreateData,
         token: '1234',
       };
 
@@ -189,16 +159,14 @@ describe('UsersService', () => {
   describe('function resetPassword', () => {
     it('reset password', async () => {
       const user = {
-        email: 'test@b21.com',
-        firstName: 'string',
-        lastName: 'string',
+        ...userCreateData,
         token: '1234',
       };
 
       const responseCreate = await UserModel.create(user);
 
       const response = await usersService.resetPassword({
-        email: 'test@b21.com',
+        email: 'test@example.com',
       });
 
       expect(response).toBe(true);
