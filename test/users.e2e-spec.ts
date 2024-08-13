@@ -8,6 +8,14 @@ import { ResponseWrapperInterceptor } from '../src/common/interceptors/responseW
 import { TimestampInterceptor } from '../src/common/interceptors/timestamp.interceptor';
 import { AppModule } from '../src/app.module';
 import { jwtCreator } from './helpers';
+import { CreateUserRequestDto } from '../src/users/dto/createUserRequest.dto';
+
+const userCreateReq: CreateUserRequestDto = {
+  email: 'test@example.com',
+  firstName: 'Pepe',
+  lastName: 'Lopez',
+  phoneNumber: '+54912345678',
+};
 
 describe('Serch User Module (e2e)', () => {
   let app: INestApplication;
@@ -39,45 +47,40 @@ describe('Serch User Module (e2e)', () => {
 
   describe('users flow', () => {
     let jwt: string;
-    let user: any = {
-      email: 'test1@test.com',
-      firstName: 'string1',
-      lastName: 'string1',
-      token: null,
-      role: [],
-    };
+    let userId = '';
 
     it('create user', async () => {
       const {
         status,
-        body: { data },
-      } = await request(app.getHttpServer()).post('/users').send(user);
+        body: { data: createResponse },
+      } = await request(app.getHttpServer()).post('/users').send(userCreateReq);
       expect(status).toBe(201);
-      expect(data.firstName).toEqual(user.firstName);
-      expect(data.lastName).toEqual(user.lastName);
-      expect(data.email).toEqual(user.email);
-      expect(data.roles).toEqual(['customer']);
-      expect(data._id).toBeDefined();
-      user = data;
+      expect(createResponse.id).toBeDefined();
+      userId = createResponse.id;
     });
 
-    it('serch User like admin', async () => {
-      jwt = await jwtCreator(user);
+    it('get user by id as super_admin - ok', async () => {
+      jwt = await jwtCreator({
+        ...userCreateReq,
+        id: userId,
+        roles: ['super_admin'],
+      });
       const {
         status,
         body: { data },
       } = await request(app.getHttpServer())
-        .get(`/users/${user._id}`)
+        .get(`/users/${userId}`)
         .set('Authorization', `Bearer ${jwt}`);
 
       expect(status).toBe(200);
-      expect(data._id).toBe(user._id);
-      expect(data.firstName).toEqual(user.firstName);
-      expect(data.email).toEqual(user.email);
+      expect(data.firstName).toEqual(userCreateReq.firstName);
+      expect(data.lastName).toEqual(userCreateReq.lastName);
+      expect(data.email).toEqual(userCreateReq.email);
+      expect(data.phoneNumber).toEqual(userCreateReq.phoneNumber);
+      expect(data.roles).toEqual(['customer']);
     });
 
-    it('serch user like admin bad request', async () => {
-      jwt = await jwtCreator(user);
+    it('get user by id as super_admin - bad request', async () => {
       const {
         status,
         body: { error },
@@ -89,8 +92,7 @@ describe('Serch User Module (e2e)', () => {
       expect(error).toBeDefined();
     });
 
-    it('serch user like admin not found', async () => {
-      jwt = await jwtCreator(user);
+    it('get user by id as super_admin - not found', async () => {
       const {
         status,
         body: { error },

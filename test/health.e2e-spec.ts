@@ -42,9 +42,8 @@ describe('Health Module (e2e)', () => {
   it('/health (GET)', async () => {
     const user = {
       email: 'test@test.com',
-      roles: ['admin'],
-      _id: '61d43f8d5d7b9a0a7adcba4a',
-      firstName: 'juan',
+      roles: ['super_admin'],
+      id: '61d43f8d5d7b9a0a7adcba4a',
     };
     const jwt = await jwtCreator(user);
 

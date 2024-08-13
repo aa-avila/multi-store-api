@@ -1,19 +1,6 @@
-import {
-  mongoose,
-  // Ref,
-} from '@typegoose/typegoose';
-import {
-  FilterQuery,
-  ObjectId,
-  PaginateOptions,
-  PaginateResult,
-} from 'mongoose';
+import { mongoose } from '@typegoose/typegoose';
+import { FilterQuery, PaginateOptions, PaginateResult } from 'mongoose';
 import { ID } from '../types/id';
-
-// export type MongoGenericDoc = {
-//   _id: ObjectId;
-//   [key: string]: any; // <== TODO: mejorar type quizas
-// };
 
 type LowDoc<T> = T & {
   _id: ID;

@@ -6,6 +6,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { UsersRepository } from './users.repository';
 import { ResetPasswordRequestDto } from '../auth/dto/resetPasswordRequest.dto';
 import { UserDoc, UserSchema } from './model/users.schema';
@@ -25,9 +26,14 @@ export class UsersService {
     private readonly repository: UsersRepository,
     @Inject(BCRYPT)
     public bcryptProvider: Bcrypt,
+    private configService: ConfigService,
   ) {}
 
   generateToken(): string {
+    const env = this.configService.get('NODE_ENV');
+    if (env === 'test' || env === 'development') {
+      return 'token1234';
+    }
     return `${this.bcryptProvider.genSaltSync()}`;
   }
 

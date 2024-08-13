@@ -7,8 +7,7 @@ import { IQueryParams } from './interfaces/IQueryParams';
 import { ProductDoc, ProductSchema } from './model/products.schema';
 import { Product } from './model/products.model';
 import { CreateDocResponse } from '../common/types/createDocResponse';
-import { mongoCreateDocResponseParser } from '../common/utils/mongoCreateDocResponseParser';
-import { mongoDocResponseParser } from '../common/utils/mongoDocResponseParser';
+import { mongoDocParser } from '../common/utils/mongoDocParser';
 
 @Injectable()
 export class ProductsRepository {
@@ -17,9 +16,16 @@ export class ProductsRepository {
     private readonly model: ReturnModelType<typeof Product>,
   ) {}
 
+  private fromDbConverter(dbDoc: Product): ProductDoc {
+    return mongoDocParser<ProductSchema, ProductDoc>(dbDoc);
+  }
+
   public async create(data: ProductSchema): Promise<CreateDocResponse> {
     const response = await this.model.create(data);
-    return mongoCreateDocResponseParser(response);
+    const { id } = this.fromDbConverter(response);
+    return {
+      id,
+    };
   }
 
   public async getAll({
@@ -43,7 +49,7 @@ export class ProductsRepository {
     return {
       ...result,
       docs: result.docs.map((doc) => {
-        return mongoDocResponseParser<ProductDoc>(doc);
+        return this.fromDbConverter(doc);
       }),
     };
   }
@@ -55,7 +61,7 @@ export class ProductsRepository {
     if (!doc) {
       return undefined;
     }
-    mongoDocResponseParser<ProductDoc>(doc);
+    return this.fromDbConverter(doc);
   }
 
   public async updateById(

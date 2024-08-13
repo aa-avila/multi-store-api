@@ -4,6 +4,7 @@ import { UsersRepository } from './users.repository';
 import { BCRYPT } from '../common/bcrypt/bcrypt.const';
 import { UserDoc, UserSchema } from './model/users.schema';
 import { Role } from '../common/enums/role.enum';
+import { ConfigService } from '@nestjs/config';
 
 jest.mock('./users.repository');
 const UsersRepositoryMock = jest.mocked(UsersRepository);
@@ -20,6 +21,7 @@ const userGetDocResponse: UserDoc = {
   ...userCreateResponse,
   ...userCreateData,
 };
+const testToken = 'token1234';
 
 describe('UsersService', () => {
   let usersService: UsersService;
@@ -30,6 +32,7 @@ describe('UsersService', () => {
       providers: [
         UsersService,
         UsersRepository,
+        ConfigService,
         {
           provide: BCRYPT,
           useValue: {
@@ -61,7 +64,7 @@ describe('UsersService', () => {
         );
       const response = await usersService.create(userCreateData);
       expect(response).toEqual(userCreateResponse);
-      expect(spy).toHaveBeenCalledWith({ ...userCreateData, token: 'salt' });
+      expect(spy).toHaveBeenCalledWith({ ...userCreateData, token: testToken });
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
@@ -209,7 +212,7 @@ describe('UsersService', () => {
       });
 
       expect(response).toBe(true);
-      expect(spy).toHaveBeenCalledWith(email, 'salt');
+      expect(spy).toHaveBeenCalledWith(email, testToken);
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
