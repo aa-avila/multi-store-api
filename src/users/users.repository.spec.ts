@@ -71,119 +71,67 @@ describe('UsersRepository', () => {
     it('get by email', async () => {
       const createdUser = await repository.createUser(userCreateData);
       const response = await repository.getByEmail(userCreateData.email);
-      console.log({ response });
-      expect(createdUser.id).toEqual(createdUser.id);
-      expect(userCreateData.email).toEqual(response.email);
-      expect(userCreateData.firstName).toEqual(response.firstName);
-      expect(userCreateData.lastName).toEqual(response.lastName);
+      expect(response.id).toEqual(createdUser.id);
+      expect(response.email).toEqual(userCreateData.email);
+      expect(response.firstName).toEqual(userCreateData.firstName);
+      expect(response.lastName).toEqual(userCreateData.lastName);
+      expect(response.createdAt).toBeDefined();
+      expect(response.updatedAt).toBeDefined();
     });
   });
 
-  // describe('getById', () => {
-  //   it('get by id', async () => {
-  //     const spy =
-  //       UsersRepositoryMock.prototype.getById.mockResolvedValue(
-  //         userGetDocResponse,
-  //       );
-  //     const response = await usersService.getById(userCreateResponse.id);
-  //     expect(response).toEqual(userGetDocResponse);
-  //     expect(spy).toHaveBeenCalledWith(userCreateResponse.id);
-  //     expect(spy).toHaveBeenCalledTimes(1);
-  //   });
+  describe('getById', () => {
+    it('get by id', async () => {
+      const createdUser = await repository.createUser(userCreateData);
+      const response = await repository.getById(createdUser.id);
+      expect(response.id).toEqual(createdUser.id);
+      expect(response.email).toEqual(userCreateData.email);
+      expect(response.firstName).toEqual(userCreateData.firstName);
+      expect(response.lastName).toEqual(userCreateData.lastName);
+      expect(response.createdAt).toBeDefined();
+      expect(response.updatedAt).toBeDefined();
+    });
+  });
 
-  //   it('get by id - not found', async () => {
-  //     expect.assertions(2);
+  describe('count', () => {
+    it('count docs', async () => {
+      await repository.createUser(userCreateData);
+      const response = await repository.count();
+      expect(response).toEqual(1);
+    });
+  });
 
-  //     const spy =
-  //       UsersRepositoryMock.prototype.getById.mockResolvedValue(undefined);
+  describe('setPasswordByToken', () => {
+    it('setPasswordByToken => new password', async () => {
+      const token = 'token1234';
+      const createdUser = await repository.createUser({
+        ...userCreateData,
+        token,
+      });
+      const passHash = 'hash1234';
+      const setPassResp = await repository.setPasswordByToken(token, passHash);
+      const getResp2 = await repository.getById(createdUser.id);
 
-  //     try {
-  //       await usersService.getById(userCreateResponse.id);
-  //     } catch (error) {
-  //       expect(error.status).toEqual(404);
-  //       expect(spy).toHaveBeenCalledTimes(1);
-  //     }
-  //   });
-  // });
+      expect(setPassResp).toBe(true);
+      expect(getResp2.password).toBe(passHash);
+    });
+  });
 
-  // describe('count', () => {
-  //   it('count docs', async () => {
-  //     const spy = UsersRepositoryMock.prototype.count.mockResolvedValue(3);
-  //     const response = await usersService.count();
-  //     expect(response).toEqual(3);
-  //     expect(spy).toHaveBeenCalledTimes(1);
-  //   });
-  // });
+  describe('setTokenByEmail', () => {
+    it('setTokenByEmail => reset password', async () => {
+      const token = 'token1234';
+      const email = userCreateData.email;
+      const createdUser = await repository.createUser({
+        ...userCreateData,
+        token,
+      });
+      const newToken = 'new1234';
+      await repository.getById(createdUser.id);
+      const response = await repository.setTokenByEmail(email, newToken);
+      const getResp = await repository.getById(createdUser.id);
 
-  // describe('newPassword', () => {
-  //   it('new password', async () => {
-  //     const spy =
-  //       UsersRepositoryMock.prototype.setPasswordByToken.mockResolvedValue(
-  //         true,
-  //       );
-  //     const token = '1234';
-
-  //     const response = await usersService.newPassword({
-  //       token,
-  //       password: '12345678',
-  //     });
-
-  //     expect(response).toBe(true);
-  //     expect(spy).toHaveBeenCalledWith(token, 'hash');
-  //     expect(spy).toHaveBeenCalledTimes(1);
-  //   });
-
-  //   it('new password - not found', async () => {
-  //     expect.assertions(2);
-
-  //     const spy =
-  //       UsersRepositoryMock.prototype.setPasswordByToken.mockResolvedValue(
-  //         false,
-  //       );
-  //     const token = '1234';
-
-  //     try {
-  //       await usersService.newPassword({
-  //         token,
-  //         password: '12345678',
-  //       });
-  //     } catch (error) {
-  //       expect(error.status).toEqual(404);
-  //       expect(spy).toHaveBeenCalledTimes(1);
-  //     }
-  //   });
-  // });
-
-  // describe('resetPassword', () => {
-  //   it('reset password', async () => {
-  //     const spy =
-  //       UsersRepositoryMock.prototype.setTokenByEmail.mockResolvedValue(true);
-  //     const email = 'test@example.com';
-
-  //     const response = await usersService.resetPassword({
-  //       email,
-  //     });
-
-  //     expect(response).toBe(true);
-  //     expect(spy).toHaveBeenCalledWith(email, 'salt');
-  //     expect(spy).toHaveBeenCalledTimes(1);
-  //   });
-
-  //   it('reset password - not found', async () => {
-  //     expect.assertions(2);
-
-  //     const spy =
-  //       UsersRepositoryMock.prototype.setTokenByEmail.mockResolvedValue(false);
-  //     const email = 'test@example.com';
-
-  //     try {
-  //       await usersService.resetPassword({
-  //         email,
-  //       });
-  //     } catch (error) {
-  //       expect(error.status).toEqual(404);
-  //       expect(spy).toHaveBeenCalledTimes(1);
-  //     }
-  //   });
-  // });
+      expect(response).toBe(true);
+      expect(getResp.token).toBe(newToken);
+    });
+  });
 });

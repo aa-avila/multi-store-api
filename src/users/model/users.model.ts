@@ -24,7 +24,11 @@ import { UserSchema } from './users.schema';
   },
 })
 @plugin(mongoosePaginate)
-@plugin(mongooseDelete, { deletedAt: true, overrideMethods: true })
+@plugin(mongooseDelete, {
+  deletedAt: true,
+  overrideMethods: true,
+  deletedBy: true,
+})
 export class User implements UserSchema {
   _id: ObjectId;
 

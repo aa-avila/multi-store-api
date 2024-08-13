@@ -7,8 +7,7 @@ import { IQueryParams } from './interfaces/IQueryParams';
 import { UserDoc, UserSchema } from './model/users.schema';
 import { User } from './model/users.model';
 import { CreateDocResponse } from '../common/types/createDocResponse';
-import { mongoCreateDocResponseParser } from '../common/utils/mongoCreateDocResponseParser';
-import { mongoDocResponseParser } from '../common/utils/mongoDocResponseParser';
+import { mongoDocParser } from '../common/utils/mongoDocParser';
 
 @Injectable()
 export class UsersRepository {
@@ -17,9 +16,16 @@ export class UsersRepository {
     private readonly model: ReturnModelType<typeof User>,
   ) {}
 
+  private fromDbConverter(dbDoc: User): UserDoc {
+    return mongoDocParser<UserSchema, UserDoc>(dbDoc);
+  }
+
   public async createUser(data: UserSchema): Promise<CreateDocResponse> {
     const response = await this.model.create(data);
-    return mongoCreateDocResponseParser(response);
+    const { id } = this.fromDbConverter(response);
+    return {
+      id,
+    };
   }
 
   public async getAll({
@@ -42,7 +48,7 @@ export class UsersRepository {
     return {
       ...result,
       docs: result.docs.map((doc) => {
-        return mongoDocResponseParser<UserDoc>(doc);
+        return this.fromDbConverter(doc);
       }),
     };
   }
@@ -52,7 +58,7 @@ export class UsersRepository {
     if (!doc) {
       return undefined;
     }
-    return mongoDocResponseParser<UserDoc>(doc);
+    return this.fromDbConverter(doc);
   }
 
   public async getByEmail(email: string): Promise<UserDoc | undefined> {
@@ -60,11 +66,7 @@ export class UsersRepository {
     if (!doc) {
       return undefined;
     }
-    const { _id: mongoId, ...rest } = doc;
-    return {
-      id: mongoId.toString(),
-      ...rest,
-    };
+    return this.fromDbConverter(doc);
   }
 
   public async updateById(
