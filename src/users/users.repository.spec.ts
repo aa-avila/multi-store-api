@@ -10,6 +10,7 @@ const userCreateData: UserSchema = {
   email: 'test@example.com',
   firstName: 'Pepito',
   lastName: 'Perez',
+  phoneNumber: '1234567890',
   roles: [Role.SUPER_ADMIN],
 };
 
@@ -75,6 +76,7 @@ describe('UsersRepository', () => {
       expect(response.email).toEqual(userCreateData.email);
       expect(response.firstName).toEqual(userCreateData.firstName);
       expect(response.lastName).toEqual(userCreateData.lastName);
+      expect(response.phoneNumber).toEqual(userCreateData.phoneNumber);
       expect(response.createdAt).toBeDefined();
       expect(response.updatedAt).toBeDefined();
     });
@@ -88,6 +90,7 @@ describe('UsersRepository', () => {
       expect(response.email).toEqual(userCreateData.email);
       expect(response.firstName).toEqual(userCreateData.firstName);
       expect(response.lastName).toEqual(userCreateData.lastName);
+      expect(response.phoneNumber).toEqual(userCreateData.phoneNumber);
       expect(response.createdAt).toBeDefined();
       expect(response.updatedAt).toBeDefined();
     });

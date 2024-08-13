@@ -12,6 +12,7 @@ const userCreateData: UserSchema = {
   email: 'test@example.com',
   firstName: 'Pepito',
   lastName: 'Perez',
+  phoneNumber: '1234567890',
   roles: [Role.SUPER_ADMIN],
 };
 const userCreateResponse = { id: 'userId1234' };

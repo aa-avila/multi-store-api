@@ -41,6 +41,9 @@ export class User implements UserSchema {
   @prop({ required: true })
   lastName: string;
 
+  @prop()
+  phoneNumber?: string;
+
   @prop({ enum: Role, type: String })
   roles: Role[];
 

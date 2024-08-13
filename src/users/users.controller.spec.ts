@@ -7,8 +7,9 @@ jest.mock('./users.service');
 
 const userCreateReq: CreateUserRequestDto = {
   email: 'test@example.com',
-  firstName: 'string',
-  lastName: 'string',
+  firstName: 'Pepe',
+  lastName: 'Lopez',
+  phoneNumber: '+54912345678',
 };
 const userId = '61d4c1b0bb013bc318c951d7';
 
