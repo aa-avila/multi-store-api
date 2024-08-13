@@ -38,7 +38,7 @@ export class UsersService {
   async create(user: ICreateUser): Promise<CreateDocResponse> {
     try {
       const token = this.generateToken();
-      const roles = [Role.CUSTOMER];
+      const roles = user.roles || [Role.CUSTOMER];
       const userPartial: UserSchema = { ...user, token, roles };
       const response = await this.repository.createUser(userPartial);
       // TODO: send token by email
@@ -47,7 +47,9 @@ export class UsersService {
       if (error.code === 11000) {
         throw new HttpException('Email already exists', HttpStatus.CONFLICT);
       }
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(
+        error.message || JSON.stringify(error),
+      );
     }
   }
 

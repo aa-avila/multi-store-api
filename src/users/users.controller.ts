@@ -72,7 +72,7 @@ export class UsersController {
   @Auth()
   @Roles(Role.SUPER_ADMIN, Role.CUSTOMER)
   @Get(':id')
-  async findOne(
+  async getById(
     @Param('id', new MongoIdValidation()) id: string,
   ): Promise<CreateUserResponseDto> {
     return this.usersService.getById(id);

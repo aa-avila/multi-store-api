@@ -1,178 +1,232 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getModelToken } from 'nestjs-typegoose';
-import { getModelForClass, mongoose } from '@typegoose/typegoose';
 import { UsersService } from './users.service';
-import { UsersController } from './users.controller';
-import { User } from './model/users.model';
+import { UsersRepository } from './users.repository';
 import { BCRYPT } from '../common/bcrypt/bcrypt.const';
+import { UserDoc, UserSchema } from './model/users.schema';
+import { Role } from '../common/enums/role.enum';
 
-const userCreateData = {
+jest.mock('./users.repository');
+const UsersRepositoryMock = jest.mocked(UsersRepository);
+
+const userCreateData: UserSchema = {
   email: 'test@example.com',
   firstName: 'Pepito',
   lastName: 'Perez',
+  roles: [Role.SUPER_ADMIN],
+};
+const userCreateResponse = { id: 'userId1234' };
+const userGetDocResponse: UserDoc = {
+  ...userCreateResponse,
+  ...userCreateData,
 };
 
 describe('UsersService', () => {
   let usersService: UsersService;
-
-  const UserModel = getModelForClass(User, {
-    schemaOptions: {
-      collection: `item-${Math.random().toString(36).substring(7)}`,
-    },
-  });
+  let usersRepository: UsersRepository;
 
   beforeEach(async () => {
-    await mongoose.connect(process.env.MONGO_URL);
-
-    const usersModule: TestingModule = await Test.createTestingModule({
-      controllers: [UsersController],
+    const productsModule: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
+        UsersRepository,
         {
           provide: BCRYPT,
           useValue: {
-            genSaltSync: jest.fn(),
+            genSaltSync: jest.fn(() => 'salt'),
             hashSync: jest.fn(() => 'hash'),
           },
-        },
-        {
-          provide: getModelToken('User'),
-          useValue: UserModel,
         },
       ],
     }).compile();
 
-    usersService = usersModule.get<UsersService>(UsersService);
-    await UserModel.deleteMany({});
+    usersService = productsModule.get<UsersService>(UsersService);
+    usersRepository = productsModule.get<UsersRepository>(UsersRepository);
   });
 
-  afterAll(async () => {
-    await mongoose.disconnect();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
     expect(usersService).toBeDefined();
+    expect(usersRepository).toBeDefined();
   });
 
-  describe('function create', () => {
-    it('create one object', async () => {
+  describe('create', () => {
+    it('create user', async () => {
+      const spy =
+        UsersRepositoryMock.prototype.createUser.mockResolvedValue(
+          userCreateResponse,
+        );
       const response = await usersService.create(userCreateData);
-      expect(response.id).toBeDefined();
+      expect(response).toEqual(userCreateResponse);
+      expect(spy).toHaveBeenCalledWith({ ...userCreateData, token: 'salt' });
+      expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('duplicate email', async () => {
-      await UserModel.create(userCreateData);
+    it('create - duplicated email error 409', async () => {
+      expect.assertions(2);
+
+      const spy = UsersRepositoryMock.prototype.createUser.mockRejectedValue({
+        code: 11000,
+      });
 
       try {
         await usersService.create(userCreateData);
       } catch (error) {
         expect(error.status).toEqual(409);
+        expect(spy).toHaveBeenCalledTimes(1);
       }
     });
 
-    it('random error', async () => {
+    it('create - random error 500', async () => {
+      expect.assertions(2);
+
+      const spy = UsersRepositoryMock.prototype.createUser.mockRejectedValue(
+        new Error('random error'),
+      );
+
       try {
-        await usersService.create(null);
+        await usersService.create(userCreateData);
       } catch (error) {
         expect(error.status).toEqual(500);
+        expect(spy).toHaveBeenCalledTimes(1);
       }
     });
   });
 
-  describe('function findByEmail', () => {
-    it('find by email', async () => {
-      await UserModel.create(userCreateData);
+  describe('getByEmail', () => {
+    it('get by email', async () => {
+      const spy =
+        UsersRepositoryMock.prototype.getByEmail.mockResolvedValue(
+          userGetDocResponse,
+        );
       const response = await usersService.getByEmail(userCreateData.email);
-      expect(response).toBeDefined();
-    });
-  });
-
-  describe('function findOne', () => {
-    it('find one User', async () => {
-      const createUser = await UserModel.create(userCreateData);
-      const response = await usersService.getById(createUser.id);
-      expect(response.email).toEqual(userCreateData.email);
-      expect(response.firstName).toEqual(userCreateData.firstName);
-      expect(response.lastName).toEqual(userCreateData.lastName);
+      expect(response).toEqual(userGetDocResponse);
+      expect(spy).toHaveBeenCalledWith(userCreateData.email);
+      expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('find an user that doesnt exist', async () => {
-      const id = '61d4c1b0bb013bc318c951d4';
+    it('get by email - not found', async () => {
+      expect.assertions(2);
+
+      const spy =
+        UsersRepositoryMock.prototype.getByEmail.mockResolvedValue(undefined);
+
       try {
-        await usersService.getById(id);
+        await usersService.getByEmail(userCreateData.email);
       } catch (error) {
-        expect(error).toBeDefined();
+        expect(error.status).toEqual(404);
+        expect(spy).toHaveBeenCalledTimes(1);
       }
     });
   });
 
-  describe('function count', () => {
-    it('count objects', async () => {
-      await UserModel.create(userCreateData);
-      const response = await usersService.count();
-      expect(response).toEqual(1);
+  describe('getById', () => {
+    it('get by id', async () => {
+      const spy =
+        UsersRepositoryMock.prototype.getById.mockResolvedValue(
+          userGetDocResponse,
+        );
+      const response = await usersService.getById(userCreateResponse.id);
+      expect(response).toEqual(userGetDocResponse);
+      expect(spy).toHaveBeenCalledWith(userCreateResponse.id);
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('get by id - not found', async () => {
+      expect.assertions(2);
+
+      const spy =
+        UsersRepositoryMock.prototype.getById.mockResolvedValue(undefined);
+
+      try {
+        await usersService.getById(userCreateResponse.id);
+      } catch (error) {
+        expect(error.status).toEqual(404);
+        expect(spy).toHaveBeenCalledTimes(1);
+      }
     });
   });
 
-  describe('function newPassword', () => {
-    it('new password', async () => {
-      const user = {
-        ...userCreateData,
-        token: '1234',
-      };
+  describe('count', () => {
+    it('count docs', async () => {
+      const spy = UsersRepositoryMock.prototype.count.mockResolvedValue(3);
+      const response = await usersService.count();
+      expect(response).toEqual(3);
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
 
-      const responseCreate = await UserModel.create(user);
+  describe('newPassword', () => {
+    it('new password', async () => {
+      const spy =
+        UsersRepositoryMock.prototype.setPasswordByToken.mockResolvedValue(
+          true,
+        );
+      const token = '1234';
 
       const response = await usersService.newPassword({
-        token: user.token,
+        token,
         password: '12345678',
       });
 
       expect(response).toBe(true);
-
-      const responseFind = await UserModel.findById(responseCreate._id);
-
-      expect(responseFind.password).toEqual('hash');
+      expect(spy).toHaveBeenCalledWith(token, 'hash');
+      expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('not found', async () => {
-      const user = {
-        ...userCreateData,
-        token: '1234',
-      };
+    it('new password - not found', async () => {
+      expect.assertions(2);
 
-      const responseCreate = await UserModel.create(user);
+      const spy =
+        UsersRepositoryMock.prototype.setPasswordByToken.mockResolvedValue(
+          false,
+        );
+      const token = '1234';
 
-      const response = await usersService.newPassword({
-        token: '4321',
-        password: '12345678',
-      });
-
-      expect(response).toBe(false);
-
-      const responseFind = await UserModel.findById(responseCreate._id);
-
-      expect(responseFind.password).toBeUndefined();
+      try {
+        await usersService.newPassword({
+          token,
+          password: '12345678',
+        });
+      } catch (error) {
+        expect(error.status).toEqual(404);
+        expect(spy).toHaveBeenCalledTimes(1);
+      }
     });
   });
 
-  describe('function resetPassword', () => {
+  describe('resetPassword', () => {
     it('reset password', async () => {
-      const user = {
-        ...userCreateData,
-        token: '1234',
-      };
-
-      const responseCreate = await UserModel.create(user);
+      const spy =
+        UsersRepositoryMock.prototype.setTokenByEmail.mockResolvedValue(true);
+      const email = 'test@example.com';
 
       const response = await usersService.resetPassword({
-        email: 'test@example.com',
+        email,
       });
 
       expect(response).toBe(true);
+      expect(spy).toHaveBeenCalledWith(email, 'salt');
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
 
-      const responseFind = await UserModel.findById(responseCreate._id);
-      expect(responseFind.token).not.toEqual(user.token);
+    it('reset password - not found', async () => {
+      expect.assertions(2);
+
+      const spy =
+        UsersRepositoryMock.prototype.setTokenByEmail.mockResolvedValue(false);
+      const email = 'test@example.com';
+
+      try {
+        await usersService.resetPassword({
+          email,
+        });
+      } catch (error) {
+        expect(error.status).toEqual(404);
+        expect(spy).toHaveBeenCalledTimes(1);
+      }
     });
   });
 });
