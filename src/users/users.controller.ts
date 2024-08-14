@@ -8,7 +8,7 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
 import { apiResponseWrapper } from '../common/factories/apiResponseWrapper.factory';
 import { CreateUserRequestDto } from './dto/createUserRequest.dto';
-import { CreateUserResponseDto } from './dto/createUserResponse.dto';
+import { CreateDocResponseDto } from '../common/dto/createDocResponse.dto';
 import { UsersService } from './users.service';
 import { GetUserResponseDto } from './dto/getUserResponse.dto';
 
@@ -22,7 +22,7 @@ export class UsersController {
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    type: apiResponseWrapper(CreateUserResponseDto),
+    type: apiResponseWrapper(CreateDocResponseDto),
     description: 'Created',
   })
   @ApiResponse({
@@ -33,7 +33,7 @@ export class UsersController {
   @Post()
   async create(
     @Body() userData: CreateUserRequestDto,
-  ): Promise<CreateUserResponseDto> {
+  ): Promise<CreateDocResponseDto> {
     return this.usersService.create(userData);
   }
 

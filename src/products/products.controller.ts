@@ -23,7 +23,7 @@ import { UserAuth } from '../common/types/userAuth';
 import { MongoIdValidation } from '../common/pipes/mongoId.pipe';
 import { ProductsService } from './products.service';
 import { CreateProductRequestDto } from './dto/createProductRequest.dto';
-import { CreateProductResponseDto } from './dto/createProductResponse.dto';
+import { CreateDocResponseDto } from '../common/dto/createDocResponse.dto';
 import { GetAllProductsResponseDto } from './dto/getAllProductsResponse.dto';
 import { UpdateProductRequestDto } from './dto/updateProductRequest.dto';
 
@@ -68,7 +68,7 @@ export class ProductsController {
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
-    type: apiResponseWrapper(CreateProductResponseDto),
+    type: apiResponseWrapper(CreateDocResponseDto),
     description: 'Created',
   })
   @ApiResponse({
@@ -91,7 +91,7 @@ export class ProductsController {
   @Post()
   async create(
     @Body() productData: CreateProductRequestDto,
-  ): Promise<CreateProductResponseDto> {
+  ): Promise<CreateDocResponseDto> {
     return this.productsService.create(productData);
   }
 
@@ -101,7 +101,7 @@ export class ProductsController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: apiResponseWrapper(CreateProductResponseDto),
+    type: apiResponseWrapper(CreateDocResponseDto),
     description: 'Ok',
   })
   @ApiResponse({
@@ -117,7 +117,7 @@ export class ProductsController {
   @Get(':id')
   async getById(
     @Param('id', new MongoIdValidation()) id: string,
-  ): Promise<CreateProductResponseDto> {
+  ): Promise<CreateDocResponseDto> {
     return this.productsService.getById(id);
   }
 
