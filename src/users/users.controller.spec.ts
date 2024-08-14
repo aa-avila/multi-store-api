@@ -53,7 +53,7 @@ describe('UsersController', () => {
   });
 
   describe('getById', () => {
-    it('find by id', async () => {
+    it('get by id', async () => {
       const spy = jest.spyOn(usersService, 'getById');
 
       await usersController.getById(userId);

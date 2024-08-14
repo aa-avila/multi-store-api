@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsBoolean, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsNotEmpty,
+  IsString,
+  IsMongoId,
+} from 'class-validator';
 
 export class ProductBasicDto {
   @IsNotEmpty()
@@ -21,6 +27,10 @@ export class ProductBasicDto {
     ],
   })
   images: string[];
+
+  @IsMongoId()
+  @ApiProperty({ example: '61d433863260b40e79f87db1' })
+  category: string;
 
   @IsBoolean()
   @ApiProperty({ example: true })

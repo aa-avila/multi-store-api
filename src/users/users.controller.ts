@@ -10,6 +10,7 @@ import { apiResponseWrapper } from '../common/factories/apiResponseWrapper.facto
 import { CreateUserRequestDto } from './dto/createUserRequest.dto';
 import { CreateUserResponseDto } from './dto/createUserResponse.dto';
 import { UsersService } from './users.service';
+import { GetUserResponseDto } from './dto/getUserResponse.dto';
 
 @Controller('users')
 @ApiTags('Users')
@@ -17,7 +18,7 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @ApiOperation({
-    summary: 'Create users',
+    summary: 'Create new user',
   })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -52,11 +53,11 @@ export class UsersController {
   }
 
   @ApiOperation({
-    summary: 'Find user by Id',
+    summary: 'Get user by Id',
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: apiResponseWrapper(CreateUserResponseDto),
+    type: apiResponseWrapper(GetUserResponseDto),
     description: 'Ok',
   })
   @ApiResponse({
@@ -74,7 +75,10 @@ export class UsersController {
   @Get(':id')
   async getById(
     @Param('id', new MongoIdValidation()) id: string,
-  ): Promise<CreateUserResponseDto> {
-    return this.usersService.getById(id);
+  ): Promise<GetUserResponseDto> {
+    const response = await this.usersService.getById(id);
+    response?.password && delete response.password;
+    response?.token && delete response.token;
+    return response;
   }
 }
