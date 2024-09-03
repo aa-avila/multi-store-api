@@ -2,7 +2,7 @@ import {
   Controller,
   Get,
   Post,
-  Put,
+  // Put,
   Param,
   Delete,
   Body,
@@ -10,6 +10,7 @@ import {
   DefaultValuePipe,
   ParseIntPipe,
   HttpStatus,
+  Patch,
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { apiResponseWrapper } from '../common/factories/apiResponseWrapper.factory';
@@ -46,6 +47,7 @@ export class ProductsController {
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'name', required: false, type: String })
+  @ApiQuery({ name: 'companyId', required: false, type: String })
   @Get()
   async getAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
@@ -131,6 +133,11 @@ export class ProductsController {
     description: 'Ok',
   })
   @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Not found',
+  })
+  @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
     type: apiErrorWrapper(ErrorResponseDto),
     description: 'Unauthorized',
@@ -147,7 +154,7 @@ export class ProductsController {
   })
   @Auth()
   @Roles(Role.SUPER_ADMIN)
-  @Put(':id')
+  @Patch(':id')
   async updateById(
     @Param('id', new MongoIdValidation()) id: string,
     @Body() item: UpdateProductRequestDto,
@@ -164,6 +171,16 @@ export class ProductsController {
     description: 'Ok',
   })
   @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Not found',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Bad request',
+  })
+  @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
     type: apiErrorWrapper(ErrorResponseDto),
     description: 'Unauthorized',
@@ -172,11 +189,6 @@ export class ProductsController {
     status: HttpStatus.FORBIDDEN,
     type: apiErrorWrapper(ErrorResponseDto),
     description: 'Forbidden',
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    type: apiErrorWrapper(ErrorResponseDto),
-    description: 'Bad request',
   })
   @Auth()
   @Roles(Role.SUPER_ADMIN)
@@ -198,9 +210,26 @@ export class ProductsController {
     type: apiResponseWrapper(GetAllProductsResponseDto),
     description: 'Ok',
   })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Bad request',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Forbidden',
+  })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'name', required: false, type: String })
+  @Auth()
+  @Roles(Role.COMPANY_ADMIN)
   @Get('me')
   async getAllOwn(
     @User() user: UserAuth,
