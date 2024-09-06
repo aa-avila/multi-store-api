@@ -35,7 +35,7 @@ export class CompaniesRepository {
   }: IQueryParams): Promise<PaginateResult<CompanyDoc>> {
     const filters: any = {};
     if (name) {
-      filters.email = { $regex: name };
+      filters.name = { $regex: name };
     }
     const result = await this.model.paginate(filters, {
       limit,

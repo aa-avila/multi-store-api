@@ -1,4 +1,11 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  NotFoundException,
+  HttpException,
+  HttpStatus,
+  InternalServerErrorException,
+} from '@nestjs/common';
 // import { ConfigService } from '@nestjs/config';
 import { PaginateResult } from 'mongoose';
 import { CompaniesRepository } from './companies.repository';
@@ -17,8 +24,17 @@ export class CompaniesService {
   ) {}
 
   async create(data: ICreateCompany): Promise<CreateDocResponse> {
-    const response = await this.repository.create(data);
-    return response;
+    try {
+      const response = await this.repository.create(data);
+      return response;
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new HttpException('Slug already exists', HttpStatus.CONFLICT);
+      }
+      throw new InternalServerErrorException(
+        error.message || JSON.stringify(error),
+      );
+    }
   }
 
   public async getAll(
