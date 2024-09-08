@@ -3,9 +3,9 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from 'nestjs-pino';
-import { ResponseWrapperInterceptor } from '../src/utils/interceptors/responseWrapper.interceptor';
-import { TimestampInterceptor } from '../src/utils/interceptors/timestamp.interceptor';
-import { AllExceptionsFilter } from '../src/utils/filters/allException.filter';
+import { ResponseWrapperInterceptor } from '../src/common/interceptors/responseWrapper.interceptor';
+import { TimestampInterceptor } from '../src/common/interceptors/timestamp.interceptor';
+import { AllExceptionsFilter } from '../src/common/filters/allException.filter';
 import { AppModule } from '../src/app.module';
 import { jwtCreator } from './helpers';
 
@@ -42,9 +42,8 @@ describe('Health Module (e2e)', () => {
   it('/health (GET)', async () => {
     const user = {
       email: 'test@test.com',
-      roles: ['admin'],
-      _id: '61d43f8d5d7b9a0a7adcba4a',
-      firstName: 'juan',
+      roles: ['super_admin'],
+      id: '61d43f8d5d7b9a0a7adcba4a',
     };
     const jwt = await jwtCreator(user);
 

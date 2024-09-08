@@ -12,13 +12,13 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { apiResponseWrapper } from '../utils/factories/apiResponseWrapper.factory';
-import { apiErrorWrapper } from '../utils/factories/apiErrorWrapper.factory';
-import { ErrorResponseDto } from '../utils/errors/error.dto';
-import { Auth } from '../auth/auth.decorador';
-import { Role } from '../utils/enum/role';
-import { Roles } from '../utils/decorators/roles.decorator';
-import { MongoIdValidation } from '../pipes/mongoId.pipe';
+import { apiResponseWrapper } from '../common/factories/apiResponseWrapper.factory';
+import { apiErrorWrapper } from '../common/factories/apiErrorWrapper.factory';
+import { ErrorResponseDto } from '../common/dto/error.dto';
+import { Auth } from '../common/decorators/auth.decorator';
+import { Role } from '../common/enums/role.enum';
+import { Roles } from '../common/decorators/roles.decorator';
+import { MongoIdValidation } from '../common/pipes/mongoId.pipe';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryRequestDto } from './dto/createCategoryRequest.dto';
 import { CreateCategoryResponseDto } from './dto/createCategoryResponse.dto';
@@ -39,7 +39,7 @@ export class CategoriesController {
     description: 'Created',
   })
   @Auth()
-  @Roles(Role.ADMIN)
+  @Roles(Role.SUPER_ADMIN)
   @Post()
   async create(
     @Body() categoryData: CreateCategoryRequestDto,
@@ -110,7 +110,7 @@ export class CategoriesController {
     description: 'Bad request',
   })
   @Auth()
-  @Roles(Role.ADMIN)
+  @Roles(Role.SUPER_ADMIN)
   @Put(':id')
   async update(
     @Param('id', new MongoIdValidation()) id: string,
@@ -133,7 +133,7 @@ export class CategoriesController {
     description: 'Bad request',
   })
   @Auth()
-  @Roles(Role.ADMIN)
+  @Roles(Role.SUPER_ADMIN)
   @Delete(':id')
   async delete(
     @Param('id', new MongoIdValidation()) id: string,

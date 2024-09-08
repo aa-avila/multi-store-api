@@ -1,11 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  ArrayMinSize,
   IsArray,
   IsBoolean,
   IsNotEmpty,
-  IsOptional,
   IsString,
+  IsMongoId,
 } from 'class-validator';
 
 export class ProductBasicDto {
@@ -21,18 +20,19 @@ export class ProductBasicDto {
   })
   description: string;
 
-  @IsOptional()
   @IsArray()
-  @ArrayMinSize(1)
   @ApiProperty({
     example: [
       'https://firebasestorage.googleapis.com/v0/b/alcachofa-corazon.appspot.com/o/example%2Ftazas-ejemplo.jpg?alt=media&token=b82766d1-4805-468c-ad4c-99058caac359',
     ],
   })
-  images?: string[];
+  images: string[];
 
-  @IsOptional()
+  @IsMongoId()
+  @ApiProperty({ example: '61d433863260b40e79f87db1' })
+  category: string;
+
   @IsBoolean()
   @ApiProperty({ example: true })
-  display?: boolean;
+  display: boolean;
 }

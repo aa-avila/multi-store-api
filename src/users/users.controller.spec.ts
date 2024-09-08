@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
+import { userCreateReq, userId, userUpdateData } from './testData';
 
 jest.mock('./users.service');
 
@@ -24,39 +24,63 @@ describe('UsersController', () => {
     expect(usersService).toBeDefined();
   });
 
-  describe('function create', () => {
-    it('create one object', async () => {
-      const user = {
-        email: 'test@b21.com',
-        firstName: 'string',
-        lastName: 'string',
-      };
-
+  describe('create', () => {
+    it('create new user', async () => {
       const spy = jest.spyOn(usersService, 'create');
 
-      await usersController.create(user);
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledTimes(1);
+      await usersController.create(userCreateReq);
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 
-  describe('function count', () => {
-    it('count all objects', async () => {
+  describe('getAll', () => {
+    it('get by all', async () => {
+      const spy = jest.spyOn(usersService, 'getAll');
+
+      await usersController.getAll(1, 1);
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getById', () => {
+    it('get by id', async () => {
+      const spy = jest.spyOn(usersService, 'getById');
+
+      await usersController.getById(userId);
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('updateById', () => {
+    it('update by id', async () => {
+      const spy = jest.spyOn(usersService, 'updateById');
+
+      await usersController.updateById(userId, userUpdateData);
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('deleteById', () => {
+    it('delete by id', async () => {
+      const spy = jest.spyOn(usersService, 'deleteById');
+
+      await usersController.deleteById(userId);
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('count', () => {
+    it('count users', async () => {
       const spy = jest.spyOn(usersService, 'count');
 
       await usersController.count();
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledTimes(1);
-    });
-  });
-
-  describe('function findOne', () => {
-    it('find one User', async () => {
-      const spy = jest.spyOn(usersService, 'findOne');
-
-      await usersController.findOne('61d4c1b0bb013bc318c951d7');
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 });

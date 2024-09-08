@@ -2,14 +2,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { LoggerModule } from 'nestjs-pino';
 import { TypegooseModule } from 'nestjs-typegoose';
-import { LoggerConfig } from './config/logger.config';
+import { LoggerConfig } from './common/config/logger.config';
 import { HealthModule } from './health/health.module';
 import { UsersModule } from './users/users.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './products/products.module';
 import { AuthModule } from './auth/auth.module';
-import { BcryptModule } from './bcrypt/bcript.module';
-import { TypegooseConfig } from './config/typegoose.config';
+import { BcryptModule } from './common/bcrypt/bcript.module';
+import { TypegooseConfig } from './common/config/typegoose.config';
 
 export const AppImports = [
   ConfigModule.forRoot({

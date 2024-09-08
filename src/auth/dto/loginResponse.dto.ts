@@ -1,15 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ObjectId } from 'mongoose';
-import { Role } from '../../utils/enum/role';
+import { Role } from '../../common/enums/role.enum';
+import { ID } from '../../common/types/id';
 
 export class LoginResponseDto {
   @ApiProperty()
   token: string;
 
   @ApiProperty({ example: '61d433863260b40e79f87db1' })
-  _id: ObjectId;
+  id: ID;
 
-  @ApiProperty({ example: 'test@b21.com.cl' })
+  @ApiProperty({ example: 'test@example.com.cl' })
   email: string;
 
   @ApiProperty({ enum: Role, isArray: true })
