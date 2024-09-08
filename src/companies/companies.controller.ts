@@ -96,6 +96,8 @@ export class CompaniesController {
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'name', required: false, type: String })
+  @Auth()
+  @Roles(Role.SUPER_ADMIN)
   @Get()
   async getAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,

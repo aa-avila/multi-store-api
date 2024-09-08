@@ -7,6 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { PaginateResult } from 'mongoose';
 import { UsersRepository } from './users.repository';
 import { ResetPasswordRequestDto } from '../auth/dto/resetPasswordRequest.dto';
 import { UserDoc, UserSchema } from './model/users.schema';
@@ -16,6 +17,7 @@ import { CreateDocResponse } from '../common/types/createDocResponse';
 import { BCRYPT } from '../common/bcrypt/bcrypt.const';
 import { Bcrypt } from '../common/bcrypt/bcrypt.provider';
 import { Role } from '../common/enums/role.enum';
+import { IQueryParams } from './interfaces/IQueryParams';
 
 @Injectable()
 export class UsersService {
@@ -59,6 +61,39 @@ export class UsersService {
     }
   }
 
+  public async getAll(
+    queryFilters: IQueryParams,
+  ): Promise<PaginateResult<UserDoc>> {
+    return this.repository.getAll(queryFilters);
+  }
+
+  public async getById(id: ID): Promise<UserDoc> {
+    const doc = await this.repository.getById(id);
+    if (!doc) {
+      throw new NotFoundException();
+    }
+    return doc;
+  }
+
+  async getByEmail(email: string): Promise<UserDoc> {
+    const doc = await this.repository.getByEmail(email);
+    if (!doc) {
+      throw new NotFoundException();
+    }
+    return doc;
+  }
+
+  public async updateById(
+    id: string,
+    updateData: Partial<ICreateUser>,
+  ): Promise<boolean> {
+    const result = await this.repository.updateById(id, updateData);
+    if (!result) {
+      throw new NotFoundException();
+    }
+    return result;
+  }
+
   async newPassword({
     token,
     password,
@@ -88,20 +123,12 @@ export class UsersService {
     return result;
   }
 
-  public async getById(id: ID): Promise<UserDoc> {
-    const doc = await this.repository.getById(id);
-    if (!doc) {
+  public async deleteById(id: string): Promise<boolean> {
+    const result = await this.repository.deleteById(id);
+    if (!result) {
       throw new NotFoundException();
     }
-    return doc;
-  }
-
-  async getByEmail(email: string): Promise<UserDoc> {
-    const doc = await this.repository.getByEmail(email);
-    if (!doc) {
-      throw new NotFoundException();
-    }
-    return doc;
+    return result;
   }
 
   async count(): Promise<number> {

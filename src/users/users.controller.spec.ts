@@ -1,17 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
-import { CreateUserRequestDto } from './dto/createUserRequest.dto';
+import { userCreateReq, userId, userUpdateData } from './testData';
 
 jest.mock('./users.service');
-
-const userCreateReq: CreateUserRequestDto = {
-  email: 'test@example.com',
-  firstName: 'Pepe',
-  lastName: 'Lopez',
-  phoneNumber: '+54912345678',
-};
-const userId = '61d4c1b0bb013bc318c951d7';
 
 describe('UsersController', () => {
   let usersService: UsersService;
@@ -42,11 +34,11 @@ describe('UsersController', () => {
     });
   });
 
-  describe('count', () => {
-    it('count users', async () => {
-      const spy = jest.spyOn(usersService, 'count');
+  describe('getAll', () => {
+    it('get by all', async () => {
+      const spy = jest.spyOn(usersService, 'getAll');
 
-      await usersController.count();
+      await usersController.getAll(1, 1);
       expect(spy).toHaveBeenCalled();
       expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -57,6 +49,36 @@ describe('UsersController', () => {
       const spy = jest.spyOn(usersService, 'getById');
 
       await usersController.getById(userId);
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('updateById', () => {
+    it('update by id', async () => {
+      const spy = jest.spyOn(usersService, 'updateById');
+
+      await usersController.updateById(userId, userUpdateData);
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('deleteById', () => {
+    it('delete by id', async () => {
+      const spy = jest.spyOn(usersService, 'deleteById');
+
+      await usersController.deleteById(userId);
+      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('count', () => {
+    it('count users', async () => {
+      const spy = jest.spyOn(usersService, 'count');
+
+      await usersController.count();
       expect(spy).toHaveBeenCalled();
       expect(spy).toHaveBeenCalledTimes(1);
     });

@@ -4,5 +4,6 @@ export interface ICreateUser {
   email: string;
   firstName: string;
   lastName: string;
-  roles?: Role[];
+  phoneNumber?: string;
+  roles: Role[];
 }

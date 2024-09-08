@@ -3,16 +3,7 @@ import { getModelToken } from 'nestjs-typegoose';
 import { getModelForClass, mongoose } from '@typegoose/typegoose';
 import { User } from './model/users.model';
 import { UsersRepository } from './users.repository';
-import { UserSchema } from './model/users.schema';
-import { Role } from '../common/enums/role.enum';
-
-const userCreateData: UserSchema = {
-  email: 'test@example.com',
-  firstName: 'Pepito',
-  lastName: 'Perez',
-  phoneNumber: '1234567890',
-  roles: [Role.SUPER_ADMIN],
-};
+import { userCreateData } from './testData';
 
 describe('UsersRepository', () => {
   let repository: UsersRepository;
@@ -96,11 +87,16 @@ describe('UsersRepository', () => {
     });
   });
 
-  describe('count', () => {
-    it('count docs', async () => {
-      await repository.createUser(userCreateData);
-      const response = await repository.count();
-      expect(response).toEqual(1);
+  describe('updateById', () => {
+    it('update By Id', async () => {
+      const createdDoc = await repository.createUser(userCreateData);
+      const updateResponse = await repository.updateById(createdDoc.id, {
+        phoneNumber: '9876543210',
+      });
+      const getResp = await repository.getById(createdDoc.id);
+
+      expect(updateResponse).toBe(true);
+      expect(getResp.phoneNumber).toBe('9876543210');
     });
   });
 
@@ -135,6 +131,25 @@ describe('UsersRepository', () => {
 
       expect(response).toBe(true);
       expect(getResp.token).toBe(newToken);
+    });
+  });
+
+  describe('count', () => {
+    it('count docs', async () => {
+      await repository.createUser(userCreateData);
+      const response = await repository.count();
+      expect(response).toEqual(1);
+    });
+  });
+
+  describe('deleteById', () => {
+    it('delete By Id', async () => {
+      const createdDoc = await repository.createUser(userCreateData);
+      const deleteResponse = await repository.deleteById(createdDoc.id);
+      const getResp = await repository.getById(createdDoc.id);
+
+      expect(deleteResponse).toBe(true);
+      expect(getResp).toBe(undefined);
     });
   });
 });
