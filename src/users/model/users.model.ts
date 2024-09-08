@@ -53,6 +53,9 @@ export class User implements UserSchema {
   @prop()
   token?: string;
 
+  @prop()
+  companyId?: string;
+
   static paginate: PaginateMethod<User>;
 
   static deleteById: DeleteMethod;

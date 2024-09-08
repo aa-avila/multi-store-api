@@ -1,5 +1,6 @@
 import { BaseDoc } from '../../common/types/baseDoc.schema';
 import { Role } from '../../common/enums/role.enum';
+import { ID } from '../../common/types/id';
 
 export type UserSchema = {
   email: string;
@@ -9,6 +10,7 @@ export type UserSchema = {
   roles: Role[];
   password?: string;
   token?: string;
+  companyId?: ID;
 };
 
 export type UserDoc = UserSchema & BaseDoc;
