@@ -6,7 +6,6 @@ import { UsersService } from '../users/users.service';
 import { NewPasswordRequestDto } from './dto/newPasswordRequest.dto';
 import { ResetPasswordRequestDto } from './dto/resetPasswordRequest.dto';
 import { UserDoc } from '../users/model/users.schema';
-import { CreateDocResponseDto } from '../common/dto/createDocResponse.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,10 +15,7 @@ export class AuthService {
     @Inject(BCRYPT) public bcryptProvider: Bcrypt,
   ) {}
 
-  async validateUser(
-    email: string,
-    password: string,
-  ): Promise<CreateDocResponseDto> {
+  async validateUser(email: string, password: string): Promise<UserDoc> {
     const user = await this.usersService.getByEmail(email);
     if (
       user &&
@@ -36,7 +32,7 @@ export class AuthService {
     return { ...payload, token: this.jwtService.sign(payload) };
   }
 
-  newPassword(newPasswordData: NewPasswordRequestDto): Promise<boolean> {
+  async newPassword(newPasswordData: NewPasswordRequestDto): Promise<boolean> {
     return this.usersService.newPassword(newPasswordData);
   }
 

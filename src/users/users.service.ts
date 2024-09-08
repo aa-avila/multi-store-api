@@ -39,6 +39,7 @@ export class UsersService {
     return `${this.bcryptProvider.genSaltSync()}`;
   }
 
+  // TODO: change name to encriptPassword
   generatePassword(password: string): string {
     return this.bcryptProvider.hashSync(password, this.saltRounds);
   }
@@ -94,6 +95,7 @@ export class UsersService {
     return result;
   }
 
+  // TODO: change name to setNewPassword
   async newPassword({
     token,
     password,

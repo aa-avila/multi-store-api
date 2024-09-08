@@ -27,9 +27,9 @@ export class AuthController {
     summary: 'Login users',
   })
   @ApiResponse({
-    status: HttpStatus.CREATED,
+    status: HttpStatus.OK,
     type: apiResponseWrapper(LoginResponseDto),
-    description: 'Created',
+    description: 'Ok',
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -38,7 +38,7 @@ export class AuthController {
   })
   @UseGuards(LocalAuthGuard)
   @ApiBody({ type: LoginRequestDto })
-  @Post('signin')
+  @Post('login')
   async login(@Request() req): Promise<LoginResponseDto> {
     return this.authService.login(req.user);
   }
