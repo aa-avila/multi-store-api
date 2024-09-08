@@ -27,14 +27,19 @@ export class AuthController {
     summary: 'Login users',
   })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: HttpStatus.CREATED,
     type: apiResponseWrapper(LoginResponseDto),
-    description: 'Ok',
+    description: 'Created',
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
     type: apiErrorWrapper(ErrorResponseDto),
     description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Bad request',
   })
   @UseGuards(LocalAuthGuard)
   @ApiBody({ type: LoginRequestDto })
@@ -50,6 +55,11 @@ export class AuthController {
     status: HttpStatus.CREATED,
     type: apiResponseWrapper(Boolean),
     description: 'Created password',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Bad request',
   })
   @Post('new-password')
   async newPassword(

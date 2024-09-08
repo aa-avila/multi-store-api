@@ -47,7 +47,7 @@ export class UsersService {
   async create(user: ICreateUser): Promise<CreateDocResponse> {
     try {
       const token = this.generateToken();
-      const roles = user.roles || [Role.CUSTOMER];
+      const roles = user.roles?.length > 0 ? user.roles : [Role.CUSTOMER]; // sets default role if not sent in request
       const userPartial: UserSchema = { ...user, token, roles };
       const response = await this.repository.createUser(userPartial);
       // TODO: send token by email
