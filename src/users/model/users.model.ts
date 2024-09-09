@@ -2,6 +2,7 @@ import {
   modelOptions,
   prop,
   plugin,
+  index,
   // Ref,
 } from '@typegoose/typegoose';
 import { ObjectId } from 'mongoose';
@@ -29,6 +30,24 @@ import { UserSchema } from './users.schema';
   overrideMethods: true,
   deletedBy: true,
 })
+@index(
+  { email: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      email: { $exists: true },
+    },
+  },
+)
+@index(
+  { token: 1 },
+  {
+    unique: false,
+    partialFilterExpression: {
+      token: { $exists: true },
+    },
+  },
+)
 export class User implements UserSchema {
   _id: ObjectId;
 

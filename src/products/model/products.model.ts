@@ -1,4 +1,4 @@
-import { modelOptions, prop, plugin, Ref } from '@typegoose/typegoose';
+import { modelOptions, prop, plugin, Ref, index } from '@typegoose/typegoose';
 import { ObjectId } from 'mongoose';
 import * as mongoosePaginate from 'mongoose-paginate-v2';
 import * as mongooseDelete from 'mongoose-delete';
@@ -6,8 +6,8 @@ import {
   DeleteMethod,
   PaginateMethod,
 } from '../../common/types/mongoCommonTypes';
-import { Category } from '../../categories/categories.model';
 import { ProductSchema } from './products.schema';
+import { ProductCategory } from '../../productCategories/model/productCategories.model';
 
 @modelOptions({
   schemaOptions: {
@@ -20,23 +20,32 @@ import { ProductSchema } from './products.schema';
 })
 @plugin(mongoosePaginate)
 @plugin(mongooseDelete, { deletedAt: true, overrideMethods: true })
+@index(
+  { companyId: 1, name: 1 },
+  {
+    unique: false,
+  },
+)
 export class Product implements ProductSchema {
   _id: ObjectId;
+
+  @prop({ required: true })
+  companyId: string;
 
   @prop({ required: true, unique: true })
   name: string;
 
-  @prop({ required: true })
+  @prop({ required: true, default: '-' })
   description: string;
 
-  @prop({ required: true, type: String, default: [] })
+  @prop({ required: true, type: [String], default: [] })
   images: string[];
 
-  @prop({ required: true, default: true })
-  display: boolean;
+  @prop({ ref: () => ProductCategory })
+  categories?: Ref<ProductCategory, string>[];
 
-  @prop({ ref: () => Category, type: () => String })
-  category?: Ref<Category, string>;
+  @prop({ required: true, default: 0 })
+  price: number;
 
   static paginate: PaginateMethod<Product>;
 

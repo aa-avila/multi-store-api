@@ -2,6 +2,7 @@ import {
   modelOptions,
   prop,
   plugin,
+  index,
   // Ref,
 } from '@typegoose/typegoose';
 import { ObjectId } from 'mongoose';
@@ -15,6 +16,7 @@ import { ProductCategorySchema } from './productCategories.schema';
 
 @modelOptions({
   schemaOptions: {
+    collection: 'productCategories',
     timestamps: true,
     toObject: {
       getters: true,
@@ -28,8 +30,17 @@ import { ProductCategorySchema } from './productCategories.schema';
   overrideMethods: true,
   deletedBy: true,
 })
+@index(
+  { companyId: 1, name: 1 },
+  {
+    unique: false,
+  },
+)
 export class ProductCategory implements ProductCategorySchema {
   _id: ObjectId;
+
+  @prop({ required: true })
+  companyId: string;
 
   @prop({ required: true })
   name: string;
@@ -39,9 +50,6 @@ export class ProductCategory implements ProductCategorySchema {
 
   @prop()
   image?: string;
-
-  @prop({ required: true })
-  companyId: string;
 
   static paginate: PaginateMethod<ProductCategory>;
 

@@ -27,6 +27,7 @@ import { CreateProductRequestDto } from './dto/createProductRequest.dto';
 import { CreateDocResponseDto } from '../common/dto/createDocResponse.dto';
 import { GetAllProductsResponseDto } from './dto/getAllProductsResponse.dto';
 import { UpdateProductRequestDto } from './dto/updateProductRequest.dto';
+import { GetProductResponseDto } from './dto/getProductResponse.dto';
 
 @ApiTags('Products')
 @Controller('products')
@@ -103,7 +104,7 @@ export class ProductsController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: apiResponseWrapper(CreateDocResponseDto),
+    type: apiResponseWrapper(GetProductResponseDto),
     description: 'Ok',
   })
   @ApiResponse({
@@ -119,7 +120,7 @@ export class ProductsController {
   @Get(':id')
   async getById(
     @Param('id', new MongoIdValidation()) id: string,
-  ): Promise<CreateDocResponseDto> {
+  ): Promise<GetProductResponseDto> {
     return this.productsService.getById(id);
   }
 

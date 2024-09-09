@@ -11,4 +11,4 @@ import { Company } from './model/companies.model';
   controllers: [CompaniesController],
   exports: [CompaniesService],
 })
-export class UsersModule {}
+export class CompaniesModule {}

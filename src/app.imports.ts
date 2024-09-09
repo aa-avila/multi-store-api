@@ -3,14 +3,14 @@ import * as Joi from 'joi';
 import { LoggerModule } from 'nestjs-pino';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { LoggerConfig } from './common/config/logger.config';
-import { HealthModule } from './health/health.module';
-import { UsersModule } from './users/users.module';
-import { CategoriesModule } from './categories/categories.module';
-import { ProductsModule } from './products/products.module';
-import { AuthModule } from './auth/auth.module';
 import { BcryptModule } from './common/bcrypt/bcript.module';
 import { TypegooseConfig } from './common/config/typegoose.config';
+import { HealthModule } from './health/health.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { CompaniesModule } from './companies/companies.module';
 import { ProductCategoriesModule } from './productCategories/productCategories.module';
+import { ProductsModule } from './products/products.module';
 
 export const AppImports = [
   ConfigModule.forRoot({
@@ -42,8 +42,8 @@ export const AppImports = [
   HealthModule,
   AuthModule,
   UsersModule,
+  CompaniesModule,
   ProductCategoriesModule,
-  CategoriesModule,
   ProductsModule,
   BcryptModule,
 ];

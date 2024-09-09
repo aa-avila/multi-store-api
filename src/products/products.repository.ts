@@ -44,7 +44,7 @@ export class ProductsRepository {
     const result = await this.model.paginate(filters, {
       limit,
       page,
-      populate: { path: 'category', select: { _id: 1, name: 1 } },
+      populate: { path: 'categories', select: { _id: 1, name: 1 } }, // TODO: check select fields
     });
     return {
       ...result,
@@ -57,7 +57,7 @@ export class ProductsRepository {
   public async getById(id: ID): Promise<ProductDoc | undefined> {
     const doc = await this.model
       .findOne({ _id: id })
-      .populate('category', { _id: 1, name: 1 });
+      .populate('categories', { _id: 1, name: 1 }); // TODO: check select fields
     if (!doc) {
       return undefined;
     }
