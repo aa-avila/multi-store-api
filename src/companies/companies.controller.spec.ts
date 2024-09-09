@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CompaniesService } from './companies.service';
 import { CompaniesController } from './companies.controller';
 import { companyCreateReq, companyId, companyUpdateData } from './testData';
+import { Role } from '../common/enums/role.enum';
 
 jest.mock('./companies.service');
 
@@ -81,6 +82,21 @@ describe('CompaniesController', () => {
 
       await companiesController.deleteById(companyId);
       expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getOwn', () => {
+    it('get Own', async () => {
+      const spy = jest.spyOn(companiesService, 'getById');
+
+      await companiesController.getOwn({
+        companyId,
+        roles: [Role.COMPANY_ADMIN],
+        email: 'email@test.com',
+        userId: '66df0d1f146ec2ea1ca5a6cc',
+      });
+      expect(spy).toHaveBeenCalledWith(companyId);
       expect(spy).toHaveBeenCalledTimes(1);
     });
   });
