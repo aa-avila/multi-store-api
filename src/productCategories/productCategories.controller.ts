@@ -21,80 +21,27 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
 import { UserAuth } from '../common/types/userAuth';
 import { apiResponseWrapper } from '../common/factories/apiResponseWrapper.factory';
-import { CreateUserRequestDto } from './dto/createUserRequest.dto';
+import { CreateProductCategoryRequestDto } from './dto/createProductCategoryRequest.dto';
 import { CreateDocResponseDto } from '../common/dto/createDocResponse.dto';
-import { UsersService } from './users.service';
-import { GetUserResponseDto } from './dto/getUserResponse.dto';
-import { UpdateUserRequestDto } from './dto/updateUserRequest.dto';
-import { GetAllUsersResponseDto } from './dto/getAllUsersResponse.dto';
+import { ProductCategoriesService } from './productCategories.service';
+import { GetProductCategoryResponseDto } from './dto/getProductCategoryResponse.dto';
+import { GetAllProductCategoriesResponseDto } from './dto/getAllProductCategoriesResponse.dto';
+import { UpdateProductCategoryRequestDto } from './dto/updateProductCategoryRequest.dto';
 
-@Controller('users')
-@ApiTags('Users')
-export class UsersController {
-  constructor(private usersService: UsersService) {}
+@Controller('product-categories')
+@ApiTags('Categories')
+export class ProductCategoriesController {
+  constructor(private companiesService: ProductCategoriesService) {}
 
-  // ******* SUPER_ADMIN  *******
+  // ******* SUPER_ADMIN *******
   @ApiOperation({
-    summary: 'Count',
-    description: 'Count users',
+    summary: 'Get all productCategories',
+    description:
+      'Gets all productCategories that match with the provided query filters ',
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: apiResponseWrapper(Number),
-    description: 'Ok',
-  })
-  @Auth()
-  @Roles(Role.SUPER_ADMIN)
-  @Get('count')
-  async count(): Promise<number> {
-    return this.usersService.count();
-  }
-
-  @ApiOperation({
-    summary: 'Create new user',
-    description: 'Creates a new user',
-  })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    type: apiResponseWrapper(CreateDocResponseDto),
-    description: 'Created',
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    type: apiErrorWrapper(ErrorResponseDto),
-    description: 'Bad request',
-  })
-  @ApiResponse({
-    status: HttpStatus.CONFLICT,
-    type: apiResponseWrapper(ErrorResponseDto),
-    description: 'Conflict',
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    type: apiErrorWrapper(ErrorResponseDto),
-    description: 'Unauthorized',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    type: apiErrorWrapper(ErrorResponseDto),
-    description: 'Forbidden',
-  })
-  @Auth()
-  @Roles(Role.SUPER_ADMIN)
-  @Post()
-  async create(
-    @Body() userData: CreateUserRequestDto,
-  ): Promise<CreateDocResponseDto> {
-    return this.usersService.create(userData);
-  }
-
-  @ApiOperation({
-    summary: 'Get all users',
-    description: 'Gets all users that match with the provided query filters ',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: apiResponseWrapper(GetAllUsersResponseDto),
+    type: apiResponseWrapper(GetAllProductCategoriesResponseDto),
     description: 'Ok',
   })
   @ApiResponse({
@@ -114,7 +61,7 @@ export class UsersController {
   })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
-  @ApiQuery({ name: 'email', required: false, type: String })
+  @ApiQuery({ name: 'name', required: false, type: String })
   @ApiQuery({ name: 'companyId', required: false, type: String })
   @Auth()
   @Roles(Role.SUPER_ADMIN)
@@ -122,25 +69,26 @@ export class UsersController {
   async getAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit: number,
-    @Query('email') email?: string,
+    @Query('name') name?: string,
     @Query('companyId') companyId?: string,
-  ): Promise<GetAllUsersResponseDto> {
-    return this.usersService.getAll({
+  ): Promise<GetAllProductCategoriesResponseDto> {
+    return this.companiesService.getAll({
       page,
       limit,
-      email,
+      name,
       companyId,
     });
   }
 
+  // ******* SUPER_ADMIN || COMPANY_ADMIN *******
   @ApiOperation({
-    summary: 'Get user by Id',
-    description: 'Gets a user by id',
+    summary: 'Create ProductCategory',
+    description: 'Creates a new ProductCategory',
   })
   @ApiResponse({
-    status: HttpStatus.OK,
-    type: apiResponseWrapper(GetUserResponseDto),
-    description: 'Ok',
+    status: HttpStatus.CREATED,
+    type: apiResponseWrapper(CreateDocResponseDto),
+    description: 'Created',
   })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -148,25 +96,65 @@ export class UsersController {
     description: 'Bad request',
   })
   @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Forbidden',
+  })
+  @Auth()
+  @Roles(Role.SUPER_ADMIN, Role.COMPANY_ADMIN)
+  @Post()
+  async create(
+    @Body() companyData: CreateProductCategoryRequestDto,
+  ): Promise<CreateDocResponseDto> {
+    return this.companiesService.create(companyData);
+  }
+
+  @ApiOperation({
+    summary: 'Get ProductCategory by id',
+    description: 'Gets a ProductCategory by id',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: apiResponseWrapper(GetProductCategoryResponseDto),
+    description: 'Ok',
+  })
+  @ApiResponse({
     status: HttpStatus.NOT_FOUND,
     type: apiErrorWrapper(ErrorResponseDto),
     description: 'Not found',
   })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Bad request',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Forbidden',
+  })
   @Auth()
-  @Roles(Role.SUPER_ADMIN)
+  @Roles(Role.SUPER_ADMIN, Role.COMPANY_ADMIN)
   @Get(':id')
   async getById(
     @Param('id', new MongoIdValidation()) id: string,
-  ): Promise<GetUserResponseDto> {
-    const response = await this.usersService.getById(id);
-    response?.password && delete response.password;
-    response?.token && delete response.token;
-    return response;
+  ): Promise<GetProductCategoryResponseDto> {
+    return this.companiesService.getById(id);
   }
 
   @ApiOperation({
-    summary: 'Update user by id',
-    description: 'Updates a user by id',
+    summary: 'Update ProductCategory by id',
+    description: 'Updates a ProductCategory by id',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -194,18 +182,18 @@ export class UsersController {
     description: 'Forbidden',
   })
   @Auth()
-  @Roles(Role.SUPER_ADMIN)
+  @Roles(Role.SUPER_ADMIN, Role.COMPANY_ADMIN)
   @Patch(':id')
   async updateById(
     @Param('id', new MongoIdValidation()) id: string,
-    @Body() updateData: UpdateUserRequestDto,
+    @Body() updateData: UpdateProductCategoryRequestDto,
   ): Promise<boolean> {
-    return this.usersService.updateById(id, updateData);
+    return this.companiesService.updateById(id, updateData);
   }
 
   @ApiOperation({
-    summary: 'Delete user by id',
-    description: 'Deletes a user by id',
+    summary: 'Delete one ProductCategory by id',
+    description: 'Deletes a ProductCategory by id',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -233,22 +221,22 @@ export class UsersController {
     description: 'Forbidden',
   })
   @Auth()
-  @Roles(Role.SUPER_ADMIN)
+  @Roles(Role.SUPER_ADMIN, Role.COMPANY_ADMIN)
   @Delete(':id')
   async deleteById(
     @Param('id', new MongoIdValidation()) id: string,
   ): Promise<boolean> {
-    return this.usersService.deleteById(id);
+    return this.companiesService.deleteById(id);
   }
 
-  // ******* COMPANY_ADMIN || SUPER_ADMIN *******
+  // ******* COMPANY_ADMIN *******
   @ApiOperation({
-    summary: 'Get user data (own user only)',
-    description: 'Gets user data -own user only-',
+    summary: 'Get ProductCategories data (own)',
+    description: 'Gets al ProductCategories data with query filters -own only-',
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: apiResponseWrapper(GetUserResponseDto),
+    type: apiResponseWrapper(GetAllProductCategoriesResponseDto),
     description: 'Ok',
   })
   @ApiResponse({
@@ -266,10 +254,23 @@ export class UsersController {
     type: apiErrorWrapper(ErrorResponseDto),
     description: 'Forbidden',
   })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'name', required: false, type: String })
   @Auth()
-  @Roles(Role.COMPANY_ADMIN, Role.SUPER_ADMIN)
+  @Roles(Role.COMPANY_ADMIN)
   @Get('me')
-  async getOwn(@User() user: UserAuth): Promise<GetUserResponseDto> {
-    return this.usersService.getById(user.companyId);
+  async getOwn(
+    @User() user: UserAuth,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit: number,
+    @Query('name') name?: string,
+  ): Promise<GetAllProductCategoriesResponseDto> {
+    return this.companiesService.getAll({
+      page,
+      limit,
+      name,
+      companyId: user.companyId,
+    });
   }
 }
