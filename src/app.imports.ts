@@ -11,6 +11,7 @@ import { UsersModule } from './users/users.module';
 import { CompaniesModule } from './companies/companies.module';
 import { ProductCategoriesModule } from './productCategories/productCategories.module';
 import { ProductsModule } from './products/products.module';
+import { PromotionsModule } from './promotions/promotions.module';
 
 export const AppImports = [
   ConfigModule.forRoot({
@@ -39,11 +40,12 @@ export const AppImports = [
     inject: [ConfigService],
     useFactory: async (config: ConfigService) => TypegooseConfig(config),
   }),
+  BcryptModule,
   HealthModule,
   AuthModule,
   UsersModule,
   CompaniesModule,
   ProductCategoriesModule,
   ProductsModule,
-  BcryptModule,
+  PromotionsModule,
 ];

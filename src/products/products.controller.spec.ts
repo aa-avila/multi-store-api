@@ -22,4 +22,6 @@ describe('ProductsController', () => {
     expect(controller).toBeDefined();
     expect(service).toBeDefined();
   });
+
+  // TODO: tests
 });

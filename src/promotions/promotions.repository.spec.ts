@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from 'nestjs-typegoose';
 import { getModelForClass, mongoose } from '@typegoose/typegoose';
-import { Product } from './model/products.model';
-import { ProductsRepository } from './products.repository';
+import { Promotion } from './model/promotions.model';
+import { PromotionsRepository } from './promotions.repository';
 
 describe('ProductsRepository', () => {
-  let repository: ProductsRepository;
+  let repository: PromotionsRepository;
 
-  const ProductsModel = getModelForClass(Product, {
+  const PromotionsModel = getModelForClass(Promotion, {
     schemaOptions: {
       collection: `item-${Math.random().toString(36).substring(7)}`,
     },
@@ -17,18 +17,18 @@ describe('ProductsRepository', () => {
     // console.log(process.env.MONGO_URL);
     await mongoose.connect(process.env.MONGO_URL);
 
-    const productsModule: TestingModule = await Test.createTestingModule({
+    const testingModule: TestingModule = await Test.createTestingModule({
       providers: [
-        ProductsRepository,
+        PromotionsRepository,
         {
-          provide: getModelToken('Product'),
-          useValue: ProductsModel,
+          provide: getModelToken('Promotion'),
+          useValue: PromotionsModel,
         },
       ],
     }).compile();
 
-    repository = productsModule.get<ProductsRepository>(ProductsRepository);
-    await ProductsModel.deleteMany({});
+    repository = testingModule.get<PromotionsRepository>(PromotionsRepository);
+    await PromotionsModel.deleteMany({});
   });
 
   it('should be defined', () => {

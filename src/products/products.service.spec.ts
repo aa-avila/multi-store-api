@@ -21,4 +21,6 @@ describe('ProductsService', () => {
     expect(service).toBeDefined();
     expect(repository).toBeDefined();
   });
+
+  // TODO: tests
 });
