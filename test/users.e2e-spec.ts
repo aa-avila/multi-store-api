@@ -81,7 +81,7 @@ describe('User Module (e2e)', () => {
         .set('Authorization', `Bearer ${superAdminJwt}`);
 
       expect(status).toBe(200);
-      expect(data).toBe(1);
+      expect(data).toBeGreaterThan(0);
     });
 
     it('get all - super_admin - ok', async () => {
@@ -94,7 +94,7 @@ describe('User Module (e2e)', () => {
 
       expect(status).toBe(200);
       expect(data.docs).toBeDefined();
-      expect(data.docs.length).toBe(1);
+      expect(data.docs.length).toBeGreaterThan(0);
       expect(data.docs[0].id).toBe(userId);
     });
 

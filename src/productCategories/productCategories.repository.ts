@@ -4,23 +4,26 @@ import { InjectModel } from 'nestjs-typegoose';
 import { PaginateResult } from 'mongoose';
 import { ID } from '../common/types/id';
 import { IQueryParams } from './interfaces/IQueryParams';
-import { ProductDoc, ProductSchema } from './model/products.schema';
-import { Product } from './model/products.model';
+import {
+  ProductCategoryDoc,
+  ProductCategorySchema,
+} from './model/productCategories.schema';
+import { ProductCategory } from './model/productCategories.model';
 import { CreateDocResponse } from '../common/types/createDocResponse';
 import { mongoDocParser } from '../common/utils/mongoDocParser';
 
 @Injectable()
-export class ProductsRepository {
+export class ProductCategoriesRepository {
   constructor(
-    @InjectModel(Product)
-    private readonly model: ReturnModelType<typeof Product>,
+    @InjectModel(ProductCategory)
+    private readonly model: ReturnModelType<typeof ProductCategory>,
   ) {}
 
-  private fromDbConverter(dbDoc: Product): ProductDoc {
-    return mongoDocParser<ProductSchema, ProductDoc>(dbDoc);
+  private fromDbConverter(dbDoc: ProductCategory): ProductCategoryDoc {
+    return mongoDocParser<ProductCategorySchema, ProductCategoryDoc>(dbDoc);
   }
 
-  public async create(data: ProductSchema): Promise<CreateDocResponse> {
+  public async create(data: ProductCategorySchema): Promise<CreateDocResponse> {
     const response = await this.model.create(data);
     const { id } = this.fromDbConverter(response);
     return {
@@ -33,7 +36,7 @@ export class ProductsRepository {
     limit,
     name,
     companyId,
-  }: IQueryParams): Promise<PaginateResult<ProductDoc>> {
+  }: IQueryParams): Promise<PaginateResult<ProductCategoryDoc>> {
     const filters: any = {};
     if (name) {
       filters.name = { $regex: name };
@@ -44,7 +47,6 @@ export class ProductsRepository {
     const result = await this.model.paginate(filters, {
       limit,
       page,
-      populate: { path: 'categories', select: { _id: 1, name: 1 } }, // TODO: check select fields
     });
     return {
       ...result,
@@ -54,10 +56,8 @@ export class ProductsRepository {
     };
   }
 
-  public async getById(id: ID): Promise<ProductDoc | undefined> {
-    const doc = await this.model
-      .findOne({ _id: id })
-      .populate('categories', { _id: 1, name: 1 }); // TODO: check select fields
+  public async getById(id: ID): Promise<ProductCategoryDoc | undefined> {
+    const doc = await this.model.findOne({ _id: id });
     if (!doc) {
       return undefined;
     }
@@ -66,7 +66,7 @@ export class ProductsRepository {
 
   public async updateById(
     id: string,
-    data: Partial<ProductSchema>,
+    data: Partial<ProductCategorySchema>,
   ): Promise<boolean> {
     const { modifiedCount } = await this.model.updateOne({ _id: id }, data);
     return modifiedCount === 1;

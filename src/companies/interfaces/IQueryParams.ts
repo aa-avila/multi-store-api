@@ -1,5 +1,5 @@
-export interface IQueryParams {
-  limit?: number;
-  page?: number;
+import { IPaginationQueryParams } from '../../common/interfaces/IPaginationQueryParams';
+
+export interface IQueryParams extends IPaginationQueryParams {
   name?: string;
 }

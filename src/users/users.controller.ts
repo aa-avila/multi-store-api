@@ -241,7 +241,7 @@ export class UsersController {
     return this.usersService.deleteById(id);
   }
 
-  // ******* COMPANY_ADMIN && SUPER_ADMIN *******
+  // ******* COMPANY_ADMIN || SUPER_ADMIN *******
   @ApiOperation({
     summary: 'Get user data (own user only)',
     description: 'Gets user data -own user only-',

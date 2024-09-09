@@ -12,11 +12,11 @@ import {
   DeleteMethod,
   PaginateMethod,
 } from '../../common/types/mongoCommonTypes';
-import { Role } from '../../common/enums/role.enum';
-import { UserSchema } from './users.schema';
+import { ProductCategorySchema } from './productCategories.schema';
 
 @modelOptions({
   schemaOptions: {
+    collection: 'productCategories',
     timestamps: true,
     toObject: {
       getters: true,
@@ -31,51 +31,27 @@ import { UserSchema } from './users.schema';
   deletedBy: true,
 })
 @index(
-  { email: 1 },
-  {
-    unique: true,
-    partialFilterExpression: {
-      email: { $exists: true },
-    },
-  },
-)
-@index(
-  { token: 1 },
+  { companyId: 1, name: 1 },
   {
     unique: false,
-    partialFilterExpression: {
-      token: { $exists: true },
-    },
   },
 )
-export class User implements UserSchema {
+export class ProductCategory implements ProductCategorySchema {
   _id: ObjectId;
 
-  @prop({ required: true, unique: true })
-  email: string;
+  @prop({ required: true })
+  companyId: string;
 
   @prop({ required: true })
-  firstName: string;
+  name: string;
 
   @prop({ required: true })
-  lastName: string;
+  description: string;
 
   @prop()
-  phoneNumber?: string;
+  image?: string;
 
-  @prop({ enum: Role, type: String })
-  roles: Role[];
-
-  @prop()
-  password?: string;
-
-  @prop()
-  token?: string;
-
-  @prop()
-  companyId?: string;
-
-  static paginate: PaginateMethod<User>;
+  static paginate: PaginateMethod<ProductCategory>;
 
   static deleteById: DeleteMethod;
 }

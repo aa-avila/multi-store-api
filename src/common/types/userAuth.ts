@@ -5,5 +5,5 @@ export type UserAuth = {
   userId: ID;
   email: string;
   companyId: ID;
-  role: Role;
+  roles: Role[];
 };

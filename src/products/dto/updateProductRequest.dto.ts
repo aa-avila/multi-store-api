@@ -4,3 +4,4 @@ import { CreateProductRequestDto } from './createProductRequest.dto';
 export class UpdateProductRequestDto extends PartialType(
   CreateProductRequestDto,
 ) {}
+// TODO: Omit companyId

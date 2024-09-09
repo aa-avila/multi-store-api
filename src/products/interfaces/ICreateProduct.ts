@@ -1,7 +1,10 @@
+import { ID } from '../../common/types/id';
+
 export interface ICreateProduct {
+  companyId: ID;
   name: string;
   description: string;
   images: string[];
-  display: boolean;
-  category?: string;
+  categories?: ID[];
+  price: number;
 }

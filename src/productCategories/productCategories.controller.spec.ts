@@ -1,24 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CompaniesService } from './companies.service';
-import { CompaniesController } from './companies.controller';
-import { companyCreateReq, companyId, companyUpdateData } from './testData';
+import { ProductCategoriesService as ProductCategoriesService } from './productCategories.service';
+import { ProductCategoriesController } from './productCategories.controller';
+import { createReq, companyId, updateData } from './testData';
 import { Role } from '../common/enums/role.enum';
 
-jest.mock('./companies.service');
+jest.mock('./productCategories.service');
 
-describe('CompaniesController', () => {
-  let companiesService: CompaniesService;
-  let companiesController: CompaniesController;
+describe('ProductCategoriesController', () => {
+  let companiesService: ProductCategoriesService;
+  let companiesController: ProductCategoriesController;
 
   beforeEach(async () => {
     const companiesModule: TestingModule = await Test.createTestingModule({
-      controllers: [CompaniesController],
-      providers: [CompaniesService],
+      controllers: [ProductCategoriesController],
+      providers: [ProductCategoriesService],
     }).compile();
 
-    companiesService = companiesModule.get<CompaniesService>(CompaniesService);
-    companiesController =
-      companiesModule.get<CompaniesController>(CompaniesController);
+    companiesService = companiesModule.get<ProductCategoriesService>(
+      ProductCategoriesService,
+    );
+    companiesController = companiesModule.get<ProductCategoriesController>(
+      ProductCategoriesController,
+    );
   });
 
   it('should be defined', () => {
@@ -30,7 +33,7 @@ describe('CompaniesController', () => {
     it('create new', async () => {
       const spy = jest.spyOn(companiesService, 'create');
 
-      await companiesController.create(companyCreateReq);
+      await companiesController.create(createReq);
       expect(spy).toHaveBeenCalled();
       expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -56,21 +59,11 @@ describe('CompaniesController', () => {
     });
   });
 
-  describe('getBySlug', () => {
-    it('get by slug', async () => {
-      const spy = jest.spyOn(companiesService, 'getBySlug');
-
-      await companiesController.getBySlug(companyId);
-      expect(spy).toHaveBeenCalled();
-      expect(spy).toHaveBeenCalledTimes(1);
-    });
-  });
-
   describe('updateById', () => {
     it('update by id', async () => {
       const spy = jest.spyOn(companiesService, 'updateById');
 
-      await companiesController.updateById(companyId, companyUpdateData);
+      await companiesController.updateById(companyId, updateData);
       expect(spy).toHaveBeenCalled();
       expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -88,15 +81,19 @@ describe('CompaniesController', () => {
 
   describe('getOwn', () => {
     it('get Own', async () => {
-      const spy = jest.spyOn(companiesService, 'getById');
+      const spy = jest.spyOn(companiesService, 'getAll');
 
-      await companiesController.getOwn({
-        companyId,
-        roles: [Role.COMPANY_ADMIN],
-        email: 'email@test.com',
-        userId: '66df0d1f146ec2ea1ca5a6cc',
-      });
-      expect(spy).toHaveBeenCalledWith(companyId);
+      await companiesController.getOwn(
+        {
+          companyId,
+          roles: [Role.COMPANY_ADMIN],
+          email: 'email@test.com',
+          userId: '66df0d1f146ec2ea1ca5a6cc',
+        },
+        1,
+        1,
+      );
+      expect(spy).toHaveBeenCalledWith({ companyId, page: 1, limit: 1 });
       expect(spy).toHaveBeenCalledTimes(1);
     });
   });
