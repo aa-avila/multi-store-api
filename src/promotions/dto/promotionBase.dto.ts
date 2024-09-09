@@ -8,7 +8,7 @@ import {
   Min,
 } from 'class-validator';
 
-export class ProductBaseDto {
+export class PromotionBaseDto {
   @IsNotEmpty()
   @IsMongoId()
   @ApiProperty({ example: '66df4c3bea6769d32f59dac0' })
@@ -16,13 +16,13 @@ export class ProductBaseDto {
 
   @IsNotEmpty()
   @IsString()
-  @ApiProperty({ example: 'Taza nubes' })
+  @ApiProperty({ example: '2x1 Super Tazon' })
   name: string;
 
   @IsNotEmpty()
   @IsString()
   @ApiProperty({
-    example: 'Taza con diseño de nubes. Modelada y pintada a mano.',
+    example: 'Solo por esta semana paga 1 y llevate 2 super tazones!',
   })
   description: string;
 
