@@ -29,7 +29,7 @@ import { GetAllProductCategoriesResponseDto } from './dto/getAllProductCategorie
 import { UpdateProductCategoryRequestDto } from './dto/updateProductCategoryRequest.dto';
 
 @Controller('product-categories')
-@ApiTags('Categories')
+@ApiTags('ProductCategories')
 export class ProductCategoriesController {
   constructor(private companiesService: ProductCategoriesService) {}
 
