@@ -6,6 +6,6 @@ import { Role } from '../../common/enums/role.enum';
 export class CreateUserRequestDto extends UserBaseDto {
   @IsArray()
   @IsEnum(Role, { each: true })
-  @ApiProperty({ example: 'super_admin' })
+  @ApiProperty({ example: ['super_admin'] })
   roles: Role[];
 }

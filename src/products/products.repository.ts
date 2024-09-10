@@ -8,6 +8,10 @@ import { ProductDoc, ProductSchema } from './model/products.schema';
 import { Product } from './model/products.model';
 import { CreateDocResponse } from '../common/types/createDocResponse';
 import { mongoDocParser } from '../common/utils/mongoDocParser';
+import {
+  ProductCategoryDoc,
+  ProductCategorySchema,
+} from '../productCategories/model/productCategories.schema';
 
 @Injectable()
 export class ProductsRepository {
@@ -16,8 +20,19 @@ export class ProductsRepository {
     private readonly model: ReturnModelType<typeof Product>,
   ) {}
 
-  private fromDbConverter(dbDoc: Product): ProductDoc {
-    return mongoDocParser<ProductSchema, ProductDoc>(dbDoc);
+  private fromDbConverter(dbDoc: Product, isPopulated?: boolean): ProductDoc {
+    const doc = mongoDocParser<ProductSchema, ProductDoc>(dbDoc);
+    const { categories } = doc;
+    if (isPopulated) {
+      if (categories?.length) {
+        doc.categories = categories.map((category) => {
+          return mongoDocParser<ProductCategorySchema, ProductCategoryDoc>(
+            category,
+          );
+        });
+      }
+    }
+    return doc;
   }
 
   public async create(data: ProductSchema): Promise<CreateDocResponse> {
@@ -44,12 +59,15 @@ export class ProductsRepository {
     const result = await this.model.paginate(filters, {
       limit,
       page,
-      populate: { path: 'categories', select: { _id: 1, name: 1 } }, // TODO: check select fields
+      populate: {
+        path: 'categories',
+        select: { _id: 1, name: 1, description: 1, image: 1 },
+      },
     });
     return {
       ...result,
       docs: result.docs.map((doc) => {
-        return this.fromDbConverter(doc);
+        return this.fromDbConverter(doc, true);
       }),
     };
   }
@@ -57,11 +75,11 @@ export class ProductsRepository {
   public async getById(id: ID): Promise<ProductDoc | undefined> {
     const doc = await this.model
       .findOne({ _id: id })
-      .populate('categories', { _id: 1, name: 1 }); // TODO: check select fields
+      .populate('categories', { _id: 1, name: 1, description: 1, image: 1 });
     if (!doc) {
       return undefined;
     }
-    return this.fromDbConverter(doc);
+    return this.fromDbConverter(doc, true);
   }
 
   public async updateById(

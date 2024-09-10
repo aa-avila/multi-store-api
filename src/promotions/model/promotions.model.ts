@@ -32,7 +32,7 @@ export class Promotion implements PromotionSchema {
   @prop({ required: true })
   companyId: string;
 
-  @prop({ required: true, unique: true })
+  @prop({ required: true })
   name: string;
 
   @prop({ required: true, default: '-' })

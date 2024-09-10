@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class UserBaseDto {
   @IsNotEmpty()
@@ -10,14 +10,14 @@ export class UserBaseDto {
   @IsNotEmpty()
   @IsString()
   @ApiProperty({ example: 'Juan' })
-  lastName: string;
+  firstName: string;
 
   @IsNotEmpty()
   @IsString()
   @ApiProperty({
     example: 'Perez',
   })
-  firstName: string;
+  lastName: string;
 
   @IsOptional()
   @IsNotEmpty()
@@ -25,5 +25,8 @@ export class UserBaseDto {
   @ApiProperty({ example: '+54912345678' })
   phoneNumber?: string;
 
-  // TODO: company
+  @IsOptional()
+  @IsMongoId()
+  @ApiProperty({ example: '66df4c3bea6769d32f59dac0' })
+  companyId?: string;
 }
