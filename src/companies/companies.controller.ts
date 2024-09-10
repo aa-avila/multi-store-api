@@ -33,8 +33,39 @@ import { UpdateCompanyRequestDto } from './dto/updateCompanyRequest.dto';
 export class CompaniesController {
   constructor(private companiesService: CompaniesService) {}
 
-  // ******* SUPER_ADMIN  *******
+  // ******* COMPANY_ADMIN *******
+  @ApiOperation({
+    summary: 'Get company data (own company)',
+    description: 'Gets company data -own company-',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: apiResponseWrapper(GetCompanyResponseDto),
+    description: 'Ok',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Bad request',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Forbidden',
+  })
+  @Auth()
+  @Roles(Role.COMPANY_ADMIN)
+  @Get('me')
+  async getOwn(@User() user: UserAuth): Promise<GetCompanyResponseDto> {
+    return this.companiesService.getById(user.companyId);
+  }
 
+  // ******* SUPER_ADMIN  *******
   @ApiOperation({
     summary: 'Create company',
     description: 'Creates a new company',
@@ -180,11 +211,9 @@ export class CompaniesController {
   })
   @Auth()
   @Roles(Role.SUPER_ADMIN)
-  @Get(':id')
-  async getBySlug(
-    @Param('id', new MongoIdValidation()) id: string,
-  ): Promise<GetCompanyResponseDto> {
-    return this.companiesService.getBySlug(id);
+  @Get('/slug/:slug')
+  async getBySlug(@Param('slug') slug: string): Promise<GetCompanyResponseDto> {
+    return this.companiesService.getBySlug(slug);
   }
 
   @ApiOperation({
@@ -262,37 +291,5 @@ export class CompaniesController {
     @Param('id', new MongoIdValidation()) id: string,
   ): Promise<boolean> {
     return this.companiesService.deleteById(id);
-  }
-
-  // ******* COMPANY_ADMIN *******
-  @ApiOperation({
-    summary: 'Get company data (own company)',
-    description: 'Gets company data -own company-',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: apiResponseWrapper(GetCompanyResponseDto),
-    description: 'Ok',
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    type: apiErrorWrapper(ErrorResponseDto),
-    description: 'Bad request',
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    type: apiErrorWrapper(ErrorResponseDto),
-    description: 'Unauthorized',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    type: apiErrorWrapper(ErrorResponseDto),
-    description: 'Forbidden',
-  })
-  @Auth()
-  @Roles(Role.COMPANY_ADMIN)
-  @Get('me')
-  async getOwn(@User() user: UserAuth): Promise<GetCompanyResponseDto> {
-    return this.companiesService.getById(user.companyId);
   }
 }

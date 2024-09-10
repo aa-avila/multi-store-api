@@ -6,6 +6,7 @@ import {
   IsMongoId,
   IsNumber,
   Min,
+  IsUrl,
 } from 'class-validator';
 
 export class PromotionBaseDto {
@@ -27,6 +28,7 @@ export class PromotionBaseDto {
   description: string;
 
   @IsArray()
+  @IsUrl({}, { each: true })
   @ApiProperty({
     isArray: true,
     example: [

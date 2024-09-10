@@ -65,7 +65,16 @@ export class UsersService {
   public async getAll(
     queryFilters: IQueryParams,
   ): Promise<PaginateResult<UserDoc>> {
-    return this.repository.getAll(queryFilters);
+    const response = await this.repository.getAll(queryFilters);
+    const sanitizedResponse = {
+      ...response,
+      docs: response.docs.map((doc) => {
+        doc.password && delete doc.password;
+        doc.token && delete doc.token;
+        return doc;
+      }),
+    };
+    return sanitizedResponse;
   }
 
   public async getById(id: ID): Promise<UserDoc> {

@@ -33,6 +33,38 @@ import { GetAllUsersResponseDto } from './dto/getAllUsersResponse.dto';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
+  // ******* COMPANY_ADMIN || SUPER_ADMIN *******
+  @ApiOperation({
+    summary: 'Get user data (own user only)',
+    description: 'Gets user data -own user only-',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: apiResponseWrapper(GetUserResponseDto),
+    description: 'Ok',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Bad request',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Forbidden',
+  })
+  @Auth()
+  @Roles(Role.COMPANY_ADMIN, Role.SUPER_ADMIN)
+  @Get('me')
+  async getOwn(@User() user: UserAuth): Promise<GetUserResponseDto> {
+    return this.usersService.getById(user.userId);
+  }
+
   // ******* SUPER_ADMIN  *******
   @ApiOperation({
     summary: 'Count',
@@ -239,37 +271,5 @@ export class UsersController {
     @Param('id', new MongoIdValidation()) id: string,
   ): Promise<boolean> {
     return this.usersService.deleteById(id);
-  }
-
-  // ******* COMPANY_ADMIN || SUPER_ADMIN *******
-  @ApiOperation({
-    summary: 'Get user data (own user only)',
-    description: 'Gets user data -own user only-',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: apiResponseWrapper(GetUserResponseDto),
-    description: 'Ok',
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    type: apiErrorWrapper(ErrorResponseDto),
-    description: 'Bad request',
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    type: apiErrorWrapper(ErrorResponseDto),
-    description: 'Unauthorized',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    type: apiErrorWrapper(ErrorResponseDto),
-    description: 'Forbidden',
-  })
-  @Auth()
-  @Roles(Role.COMPANY_ADMIN, Role.SUPER_ADMIN)
-  @Get('me')
-  async getOwn(@User() user: UserAuth): Promise<GetUserResponseDto> {
-    return this.usersService.getById(user.companyId);
   }
 }

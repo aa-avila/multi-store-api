@@ -48,6 +48,15 @@ import { UserSchema } from './users.schema';
     },
   },
 )
+@index(
+  { companyId: 1 },
+  {
+    unique: false,
+    partialFilterExpression: {
+      companyId: { $exists: true },
+    },
+  },
+)
 export class User implements UserSchema {
   _id: ObjectId;
 

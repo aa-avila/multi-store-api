@@ -1,7 +1,6 @@
-import { OmitType } from '@nestjs/swagger';
-import { CreateDocResponseDto } from '../../common/dto/createDocResponse.dto';
+import { PartialType } from '@nestjs/swagger';
+import { CreateProductCategoryRequestDto } from '../dto/createProductCategoryRequest.dto';
 
-export class UpdateProductCategoryRequestDto extends OmitType(
-  CreateDocResponseDto,
-  ['id'] as const,
+export class UpdateProductCategoryRequestDto extends PartialType(
+  CreateProductCategoryRequestDto,
 ) {}

@@ -34,6 +34,52 @@ import { GetPromotionResponseDto } from './dto/getPromotionResponse.dto';
 export class PromotionsController {
   constructor(private readonly promotionsService: PromotionsService) {}
 
+  // ******* COMPANY_ADMIN *******
+  @ApiOperation({
+    summary: 'Get all promotions (own company)',
+    description:
+      'Gets all -own company- promotions that match with the provided query filters ',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    type: apiResponseWrapper(GetAllProductsResponseDto),
+    description: 'Ok',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Bad request',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    type: apiErrorWrapper(ErrorResponseDto),
+    description: 'Forbidden',
+  })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'name', required: false, type: String })
+  @Auth()
+  @Roles(Role.COMPANY_ADMIN)
+  @Get('me')
+  async getAllOwn(
+    @User() user: UserAuth,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit: number,
+    @Query('name') name?: string,
+  ): Promise<GetAllProductsResponseDto> {
+    return this.promotionsService.getAll({
+      page,
+      limit,
+      name,
+      companyId: user.companyId,
+    });
+  }
+
   // ******* SUPER_ADMIN *******
   @ApiOperation({
     summary: 'Get all promotions',
@@ -198,51 +244,5 @@ export class PromotionsController {
     @Param('id', new MongoIdValidation()) id: string,
   ): Promise<boolean> {
     return this.promotionsService.deleteById(id);
-  }
-
-  // ******* COMPANY_ADMIN *******
-  @ApiOperation({
-    summary: 'Get all promotions (own company)',
-    description:
-      'Gets all -own company- promotions that match with the provided query filters ',
-  })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    type: apiResponseWrapper(GetAllProductsResponseDto),
-    description: 'Ok',
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    type: apiErrorWrapper(ErrorResponseDto),
-    description: 'Bad request',
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    type: apiErrorWrapper(ErrorResponseDto),
-    description: 'Unauthorized',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    type: apiErrorWrapper(ErrorResponseDto),
-    description: 'Forbidden',
-  })
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'limit', required: false, type: Number })
-  @ApiQuery({ name: 'name', required: false, type: String })
-  @Auth()
-  @Roles(Role.COMPANY_ADMIN)
-  @Get('me')
-  async getAllOwn(
-    @User() user: UserAuth,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit: number,
-    @Query('name') name?: string,
-  ): Promise<GetAllProductsResponseDto> {
-    return this.promotionsService.getAll({
-      page,
-      limit,
-      name,
-      companyId: user.companyId,
-    });
   }
 }
