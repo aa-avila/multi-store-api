@@ -9,6 +9,6 @@ import { Company } from './model/companies.model';
   imports: [TypegooseModule.forFeature([Company])],
   providers: [CompaniesService, CompaniesRepository],
   controllers: [CompaniesController],
-  exports: [CompaniesService],
+  // exports: [CompaniesService],
 })
 export class CompaniesModule {}
