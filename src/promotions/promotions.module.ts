@@ -9,5 +9,6 @@ import { Promotion } from './model/promotions.model';
   imports: [TypegooseModule.forFeature([Promotion])],
   controllers: [PromotionsController],
   providers: [PromotionsService, PromotionsRepository],
+  // exports: [PromotionsService],
 })
 export class PromotionsModule {}

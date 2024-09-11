@@ -12,6 +12,7 @@ import { CompaniesModule } from './companies/companies.module';
 import { ProductCategoriesModule } from './productCategories/productCategories.module';
 import { ProductsModule } from './products/products.module';
 import { PromotionsModule } from './promotions/promotions.module';
+import { StorefrontModule } from './storefront/storefront.module';
 
 export const AppImports = [
   ConfigModule.forRoot({
@@ -48,4 +49,5 @@ export const AppImports = [
   ProductCategoriesModule,
   ProductsModule,
   PromotionsModule,
+  StorefrontModule,
 ];

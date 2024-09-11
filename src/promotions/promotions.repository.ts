@@ -86,6 +86,20 @@ export class PromotionsRepository {
     return this.fromDbConverter(doc, true);
   }
 
+  public async getByIdAndCompanyId(
+    id: ID,
+    companyId: ID,
+  ): Promise<PromotionDoc | undefined> {
+    const doc = await this.model
+      .findOne({ _id: id, companyId })
+      .populate('categories', { _id: 1, name: 1, description: 1, image: 1 });
+
+    if (!doc) {
+      return undefined;
+    }
+    return this.fromDbConverter(doc, true);
+  }
+
   public async updateById(
     id: string,
     data: Partial<PromotionSchema>,

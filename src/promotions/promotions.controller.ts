@@ -25,7 +25,7 @@ import { MongoIdValidation } from '../common/pipes/mongoId.pipe';
 import { PromotionsService } from './promotions.service';
 import { CreatePromotionRequestDto } from './dto/createPromotionRequest.dto';
 import { CreateDocResponseDto } from '../common/dto/createDocResponse.dto';
-import { GetAllProductsResponseDto } from './dto/getAllPromotionsResponse.dto';
+import { GetAllPromotionsResponseDto } from './dto/getAllPromotionsResponse.dto';
 import { UpdatePromotionRequestDto } from './dto/updatePromotionRequest.dto';
 import { GetPromotionResponseDto } from './dto/getPromotionResponse.dto';
 
@@ -42,7 +42,7 @@ export class PromotionsController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: apiResponseWrapper(GetAllProductsResponseDto),
+    type: apiResponseWrapper(GetAllPromotionsResponseDto),
     description: 'Ok',
   })
   @ApiResponse({
@@ -71,7 +71,7 @@ export class PromotionsController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit: number,
     @Query('name') name?: string,
-  ): Promise<GetAllProductsResponseDto> {
+  ): Promise<GetAllPromotionsResponseDto> {
     return this.promotionsService.getAll({
       page,
       limit,
@@ -88,7 +88,7 @@ export class PromotionsController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    type: apiResponseWrapper(GetAllProductsResponseDto),
+    type: apiResponseWrapper(GetAllPromotionsResponseDto),
     description: 'Ok',
   })
   @ApiQuery({ name: 'page', required: false, type: Number })
@@ -101,7 +101,7 @@ export class PromotionsController {
     @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit: number,
     @Query('name') name?: string,
     @Query('companyId') companyId?: string,
-  ): Promise<GetAllProductsResponseDto> {
+  ): Promise<GetAllPromotionsResponseDto> {
     return this.promotionsService.getAll({
       page,
       limit,
